@@ -16,27 +16,26 @@ from a2c_ase.soft_sphere import SoftSphere
 def get_diameter(composition: Composition) -> float:
     """Calculate characteristic atomic diameter for a chemical composition.
 
-    Args:
-        composition (Composition): Pymatgen Composition object specifying the chemical formula.
+    Parameters
+    ----------
+    composition : Composition
+        Pymatgen Composition object specifying the chemical formula.
 
-    Returns:
-        float: Estimated minimum atomic diameter in Angstroms.
+    Returns
+    -------
+    float
+        Estimated minimum atomic diameter in Angstroms.
 
-    For multi-element compositions:
-    - Uses ionic radii to find minimum possible interatomic distance
-    - Examines all element pairs and sums their ionic radii
-    - Returns smallest pair distance as diameter
+    Notes
+    -----
+    For multi-element compositions, calculates minimum possible interatomic distance by:
+    - Using ionic radii for each element
+    - Finding minimum sum of radii across all element pairs
 
-    For single-element compositions:
+    For single elements:
     - Uses metallic radius for metals
-    - Uses atomic radius for non-metals (falls back to ionic radius if needed)
-    - Returns twice the appropriate radius as diameter
-
-    Examples:
-        >>> comp = Composition("Fe2O3")
-        >>> get_diameter(comp)  # Minimum separation in iron oxide
-        >>> comp = Composition("Cu")
-        >>> get_diameter(comp)  # Twice Cu metallic radius
+    - Uses atomic radius for non-metals, falling back to ionic radius if needed
+    - Returns twice the radius as diameter
     """
     elements = composition.elements
 
@@ -270,31 +269,35 @@ def valid_subcell(
     fusion_distance: float = 1.5,
     distance_tolerance: float = 0.0001,
 ) -> bool:
-    """Validate a relaxed subcell structure against physical and numerical criteria.
+    """Validate a relaxed subcell structure.
 
-    This function checks if a relaxed subcell structure meets several validation criteria:
-    1. Formation energy is physically reasonable (not too negative)
-    2. Energy decreased during relaxation (optimization worked properly)
-    3. Final energy is low enough (good convergence)
-    4. Atoms are not too close (no atomic fusion)
+    Parameters
+    ----------
+    atoms : Atoms
+        ASE Atoms object with atomic positions, species, and cell information.
+    initial_energy : float
+        Total energy before relaxation in eV.
+    final_energy : float
+        Total energy after relaxation in eV.
+    e_tol : float, default=0.001
+        Energy tolerance (eV) for comparing initial and final energies.
+    fe_lower_limit : float, default=-5.0
+        Lower limit for formation energy (eV/atom). More negative values are unphysical.
+    fe_upper_limit : float, default=0.0
+        Upper limit for formation energy (eV/atom). Higher values indicate poor convergence.
+    fusion_distance : float, default=1.5
+        Minimum allowed interatomic distance (Å). Shorter distances indicate atomic fusion.
+    distance_tolerance : float, default=0.0001
+        Distance tolerance (Å) for considering atoms at same position.
 
-    Args:
-        atoms: ASE Atoms object containing atomic positions, species, and cell information.
-        initial_energy: Total energy of the structure before relaxation, in eV.
-        final_energy: Total energy of the structure after relaxation, in eV.
-        e_tol: Energy tolerance for comparing initial and final energies, in eV.
-            Used to check if optimization reduced the energy. Defaults to 0.001 eV.
-        fe_lower_limit: Lower limit for formation energy, in eV/atom. Values below this
-            are considered unphysical. Defaults to -5.0 eV/atom.
-        fe_upper_limit: Upper limit for formation energy, in eV/atom. Values above this
-            indicate poor convergence. Defaults to 0.0 eV/atom.
-        fusion_distance: Minimum allowed distance between any pair of atoms, in Å.
-            Distances below this indicate atomic fusion. Defaults to 1.5 Å.
-        distance_tolerance: Distance below which atoms are considered to be at the same
-            position when computing minimum distances. Defaults to 0.0001 Å.
-
-    Returns:
-        bool: True if the structure passes all validation checks, False otherwise.
+    Returns
+    -------
+    bool
+        True if structure passes all validation checks:
+        - Formation energy is physically reasonable
+        - Energy decreased during relaxation
+        - Final energy indicates good convergence
+        - No atomic fusion detected
     """
     # Check if formation energy is unphysically negative
     if final_energy < fe_lower_limit:
@@ -381,28 +384,39 @@ def get_target_temperature(
 ) -> float:
     """Calculate target temperature for a melt-quench-equilibrate simulation step.
 
-    Args:
-        step (int): Current simulation step number (0-indexed)
-        equi_steps (int): Number of steps for initial high-temperature equilibration
-        cool_steps (int): Number of steps for linear cooling
-        T_high (float): Initial high temperature in Kelvin
-        T_low (float): Final low temperature in Kelvin
+    Parameters
+    ----------
+    step : int
+        Current simulation step number (0-indexed)
+    equi_steps : int
+        Number of steps for initial high-temperature equilibration
+    cool_steps : int
+        Number of steps for linear cooling
+    T_high : float
+        Initial high temperature in Kelvin
+    T_low : float
+        Final low temperature in Kelvin
 
-    Returns:
-        float: Target temperature in Kelvin for the current step
+    Returns
+    -------
+    float
+        Target temperature in Kelvin for the current step
 
-    The temperature profile has three phases:
-    1. Hold at T_high for equi_steps
-    2. Cool linearly from T_high to T_low over cool_steps
-    3. Hold at T_low for remaining steps
+    Notes
+    -----
+    The temperature profile consists of three phases:
+    1. Initial equilibration at T_high for equi_steps
+    2. Linear cooling from T_high to T_low over cool_steps
+    3. Final equilibration at T_low for remaining steps
 
-    Examples:
-        >>> get_target_temperature(10, 100, 200, 2000.0, 300.0)  # During equilibration
-        2000.0
-        >>> get_target_temperature(200, 100, 200, 2000.0, 300.0)  # During cooling
-        1150.0
-        >>> get_target_temperature(350, 100, 200, 2000.0, 300.0)  # After cooling
-        300.0
+    Examples
+    --------
+    >>> get_target_temperature(10, 100, 200, 2000.0, 300.0)  # During equilibration
+    2000.0
+    >>> get_target_temperature(200, 100, 200, 2000.0, 300.0)  # During cooling
+    1150.0
+    >>> get_target_temperature(350, 100, 200, 2000.0, 300.0)  # After cooling
+    300.0
     """
     # Initial high-temperature equilibration phase
     if step < equi_steps:
@@ -430,30 +444,40 @@ def get_subcells_to_crystallize(
 ) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
     """Extract subcell structures from a larger structure for crystallization.
 
+    Parameters
+    ----------
+    fractional_positions : np.ndarray
+        Fractional coordinates of atoms, shape [n_atoms, 3].
+    species : list[str]
+        Chemical element symbols for each atom.
+    d_frac : float, default=0.05
+        Grid spacing in fractional coordinates. Smaller values create more overlap.
+    n_min : int, default=1
+        Minimum atoms per subcell.
+    n_max : int, default=48
+        Maximum atoms per subcell.
+    restrict_to_compositions : Sequence[str], optional
+        Chemical formulas to filter subcells by (e.g. ["AB", "AB2"]). Only matching compositions are
+        returned.
+    max_coeff : int, optional
+        Maximum stoichiometric coefficient for auto-generating restrictions. E.g. max_coeff=2
+        allows AB2 but not AB3.
+    elements : Sequence[str], optional
+        Elements for generating stoichiometries. Required if max_coeff provided.
+
+    Returns
+    -------
+    list[tuple[np.ndarray, np.ndarray, np.ndarray]]
+        List of (indices, lower_bounds, upper_bounds) where:
+        - indices: Atom indices in subcell
+        - lower_bounds: Lower bounds in fractional coords [3]
+        - upper_bounds: Upper bounds in fractional coords [3]
+
+    Notes
+    -----
     Divides a structure into overlapping subcells that can be relaxed to find stable crystal
     structures. Uses a grid in fractional coordinates to identify atom groups meeting size and
     composition criteria.
-
-    Args:
-        fractional_positions (np.ndarray): Fractional coordinates of atoms, shape [n_atoms, 3].
-        species (list[str]): Chemical element symbols for each atom.
-        d_frac (float, optional): Grid spacing in fractional coordinates. Smaller values create
-            more overlap. Defaults to 0.05.
-        n_min (int, optional): Minimum atoms per subcell. Defaults to 1.
-        n_max (int, optional): Maximum atoms per subcell. Defaults to 48.
-        restrict_to_compositions (Sequence[str], optional): Chemical formulas to filter subcells by
-            (e.g. ["AB", "AB2"]). Only matching compositions are returned. Defaults to None.
-        max_coeff (int, optional): Maximum stoichiometric coefficient for auto-generating
-            restrictions. E.g. max_coeff=2 allows AB2 but not AB3. Defaults to None.
-        elements (Sequence[str], optional): Elements for generating stoichiometries. Required if
-            max_coeff provided. Defaults to None.
-
-    Returns:
-        list[tuple[np.ndarray, np.ndarray, np.ndarray]]: List of (indices, lower_bounds,
-            upper_bounds) where:
-            - indices: Atom indices in subcell
-            - lower_bounds: Lower bounds in fractional coords [3]
-            - upper_bounds: Upper bounds in fractional coords [3]
     """
     # Convert species list to numpy array for easier composition handling
     species_array = np.array(species)
