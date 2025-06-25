@@ -132,9 +132,10 @@ for s in relaxed_atoms_list:
     )
     try:
         sp = SpacegroupAnalyzer(pymatgen_struct).get_space_group_symbol()
+        spg_counter[sp] += 1
     except TypeError:
         continue
-spg_counter[sp] += 1
+
 
 print("All space groups encountered:", dict(spg_counter))
 
