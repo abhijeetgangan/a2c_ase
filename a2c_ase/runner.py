@@ -23,7 +23,7 @@ def melt_quench_md(
     T_low: float = 300.0,
     time_step: float = 2.0,
     friction: float = 0.01,
-    trajectory_file: str = None,
+    trajectory_file: str | None = None,
     seed: int = 42,
     verbose: bool = True,
     log_interval: int = 100,

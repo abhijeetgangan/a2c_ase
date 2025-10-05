@@ -2,69 +2,32 @@
 name = "a2c_ase"
 version = "0.0.1"
 description = "ASE friendly implementation of the a2c workflow with MLIPs"
-authors = [
-    { name = "Abhijeet Gangan", email = "flyingicecube42@gmail.com" },
-    { name = "Abhijeet Gangan", email = "abhijeetgangan@g.ucla.edu" },
-]
+authors = [{ name = "Abhijeet Gangan", email = "abhijeetgangan@g.ucla.edu" }]
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
-dependencies = [
-    "ase",
-    "numpy",
-    "pymatgen",
-    "tqdm",
-]
-
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_functions = "test_*"
+requires-python = ">=3.10"
+dependencies = ["ase", "numpy", "pymatgen", "tqdm"]
 
 [project.optional-dependencies]
-dev = [
-    "pre-commit",
-    "ruff",
-]
-test = [
-    "pytest",
-    "pytest-cov",
-]
+dev = ["pre-commit", "ruff", "ty>=0.0.1a20"]
+test = ["pytest", "pytest-cov"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["a2c_ase*"]
-exclude = ["example*"]
 
 [tool.ruff]
-# Enable flake8-bugbear (`B`) rules.
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
 select = ["E", "F", "B", "I"]
 
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".git",
-    ".env",
-    ".venv",
-    "venv",
-    "env",
-    "__pycache__",
-    "build",
-    "dist",
-    "example",
-]
-
-# Allow lines to be as long as 100 characters.
-line-length = 100
-
-# Target Python 3.9+
-target-version = "py39"
-
-# Allow autofix for all enabled rules (when `--fix` is passed).
-fixable = ["ALL"]
-
-# Sort imports.
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["a2c_ase"]
+
+[tool.ty]
+src = { include = ["a2c_ase", "tests"], exclude = ["example"] }

@@ -10,7 +10,7 @@ from ase.optimize import FIRE
 from pymatgen.core.composition import Composition
 from pymatgen.core.structure import Structure
 
-from a2c_ase.soft_sphere import SoftSphere
+from a2c_ase.potentials.soft_sphere import SoftSphere
 
 
 def get_diameter(composition: Composition) -> float:
@@ -165,7 +165,7 @@ def random_packed_structure(
     # Create ASE Atoms object
     # Assign atomic numbers based on composition
     atomic_numbers = []
-    for element, count in zip(elements, element_counts):
+    for element, count in zip(elements, element_counts, strict=False):
         # Get atomic number from pymatgen Element
         element_obj = Composition(element).elements[0]
         atomic_numbers.extend([element_obj.Z] * count)
@@ -203,6 +203,7 @@ def random_packed_structure(
             # Set up logger for detailed output if verbose
             def log_progress():
                 """Log optimization progress."""
+                assert log_data is not None
                 e = atoms.get_potential_energy()
                 fmax = np.sqrt((atoms.get_forces() ** 2).sum(axis=1).max())
 
@@ -492,9 +493,9 @@ def get_subcells_to_crystallize(
         # Convert stoichiometries to composition formulas
         comps = []
         for stoich in stoichs:
-            comp = dict(zip(elements, stoich))
+            comp = dict(zip(elements, stoich, strict=False))
             comps.append(Composition.from_dict(comp).reduced_formula)
-        restrict_to_compositions = set(comps)
+        restrict_to_compositions = list(set(comps))
 
     # Ensure compositions are in reduced formula form if provided
     if restrict_to_compositions:
