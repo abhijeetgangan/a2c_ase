@@ -57,15 +57,15 @@ def test_valid_subcell():
     # Create dummy atoms with a cell
     atoms = Atoms("Si2", positions=[[0, 0, 0], [2.0, 0, 0]], cell=[5, 5, 5], pbc=True)
 
-    # Valid case: energy decreased, within bounds, no fusion
+    # Valid case: energy decreased (0.0 → -1.0), within bounds, no fusion
     is_valid = valid_subcell(atoms, initial_energy=0.0, final_energy=-1.0, fusion_distance=1.5)
     assert is_valid
 
-    # Invalid: energy increased
+    # Invalid: energy increased during relaxation (-1.0 → 0.0 is uphill)
     is_valid = valid_subcell(atoms, initial_energy=-1.0, final_energy=0.0, fusion_distance=1.5)
     assert not is_valid
 
-    # Invalid: unphysically low energy
+    # Invalid: final energy is unphysically low (< -5.0 eV/atom threshold)
     is_valid = valid_subcell(atoms, initial_energy=0.0, final_energy=-10.0, fusion_distance=1.5)
     assert not is_valid
 
