@@ -34,9 +34,9 @@ def test_soft_sphere_energy_values():
         calc = SoftSphere(sigma=sigma, epsilon=epsilon, alpha=alpha)
         atoms.calc = calc
         energy = atoms.get_potential_energy()
-        assert np.isclose(
-            energy, expected, atol=1e-6
-        ), f"Energy at r={distance} should be {expected}, got {energy}"
+        assert np.isclose(energy, expected, atol=1e-6), (
+            f"Energy at r={distance} should be {expected}, got {energy}"
+        )
 
 
 def test_soft_sphere_forces_gradient():
