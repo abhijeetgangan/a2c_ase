@@ -3,6 +3,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
+#     "a2c_ase @ git+https://github.com/abhijeetgangan/a2c_ase.git",
 #     "ase",
 #     "numpy",
 #     "pymatgen",
