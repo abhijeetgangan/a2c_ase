@@ -9,7 +9,7 @@ requires-python = ">=3.10"
 dependencies = ["ase", "numpy", "pymatgen", "tqdm"]
 
 [project.optional-dependencies]
-dev = ["pre-commit", "ruff", "ty"]
+dev = ["pre-commit", "ruff", "ty>=0.0.1a20"]
 test = ["pytest", "pytest-cov"]
 
 [build-system]
@@ -30,4 +30,4 @@ select = ["E", "F", "B", "I"]
 known-first-party = ["a2c_ase"]
 
 [tool.ty]
-src = ["a2c_ase", "tests"]
+src = { include = ["a2c_ase", "tests"], exclude = ["example"] }
