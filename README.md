@@ -3,7 +3,7 @@
 [![CI](https://github.com/abhijeetgangan/a2c_ase/actions/workflows/ci.yml/badge.svg)](https://github.com/abhijeetgangan/a2c_ase/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/abhijeetgangan/a2c_ase/branch/main/graph/badge.svg)](https://codecov.io/gh/abhijeetgangan/a2c_ase)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
 An ASE-friendly implementation of the amorphous-to-crystalline (a2c) workflow.
 

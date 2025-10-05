@@ -5,7 +5,7 @@ description = "ASE friendly implementation of the a2c workflow with MLIPs"
 authors = [{ name = "Abhijeet Gangan", email = "abhijeetgangan@g.ucla.edu" }]
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["ase", "numpy", "pymatgen", "tqdm"]
 
 [project.optional-dependencies]
@@ -21,7 +21,7 @@ include = ["a2c_ase*"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 select = ["E", "F", "B", "I"]
 
 [tool.ruff.isort]
