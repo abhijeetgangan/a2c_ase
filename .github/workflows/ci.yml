@@ -16,38 +16,25 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
 
-    - name: Install UV
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
 
     - name: Install dependencies
-      run: |
-        uv pip install --system -e ".[dev,test]"
-        uv pip install --system pytest pytest-cov
+      run: uv pip install -e ".[dev,test]"
 
     - name: Lint with Ruff
       run: |
-        uv pip install --system ruff
-        ruff check .
-        ruff format --check .
+        uv run ruff check .
+        uv run ruff format --check .
 
     - name: Type check with ty
-      run: ty check
+      run: uv run ty check
 
     - name: Test with pytest
-      run: |
-        pytest --cov=a2c_ase tests/
-
-    - name: Run tests with coverage
-      run: |
-        pip install pytest-cov
-        pytest --cov=./ --cov-report=xml
+      run: uv run pytest --cov=a2c_ase --cov-report=xml tests/
 
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v5
