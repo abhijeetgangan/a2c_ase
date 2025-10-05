@@ -1,5 +1,16 @@
 """Test script for the a2c workflow for Si64 using MACE."""
 
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "ase",
+#     "numpy",
+#     "pymatgen",
+#     "tqdm",
+#     "mace-torch",
+# ]
+# ///
+
 from collections import defaultdict
 
 import numpy as np
