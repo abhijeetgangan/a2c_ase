@@ -53,8 +53,8 @@ pre-commit install
 
 Run checks:
 ```bash
-ruff check          # lint
-ruff format         # format
+ruff check         # lint
+ruff format        # format
 ty check           # type check
 pytest             # test
 
