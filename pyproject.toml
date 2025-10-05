@@ -28,3 +28,6 @@ select = ["E", "F", "B", "I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["a2c_ase"]
+
+[tool.ty]
+exclude = ["example"]
