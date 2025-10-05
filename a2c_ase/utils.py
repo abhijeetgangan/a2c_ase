@@ -203,6 +203,7 @@ def random_packed_structure(
             # Set up logger for detailed output if verbose
             def log_progress():
                 """Log optimization progress."""
+                assert log_data is not None
                 e = atoms.get_potential_energy()
                 fmax = np.sqrt((atoms.get_forces() ** 2).sum(axis=1).max())
 
@@ -494,7 +495,7 @@ def get_subcells_to_crystallize(
         for stoich in stoichs:
             comp = dict(zip(elements, stoich, strict=False))
             comps.append(Composition.from_dict(comp).reduced_formula)
-        restrict_to_compositions = set(comps)
+        restrict_to_compositions = list(set(comps))
 
     # Ensure compositions are in reduced formula form if provided
     if restrict_to_compositions:
