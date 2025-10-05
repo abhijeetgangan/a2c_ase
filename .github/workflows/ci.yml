@@ -37,6 +37,10 @@ jobs:
         ruff check .
         ruff format --check .
 
+    - name: Type check with ty
+      run: |
+        uvx ty check
+
     - name: Test with pytest
       run: |
         pytest --cov=a2c_ase tests/

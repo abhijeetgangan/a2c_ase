@@ -35,6 +35,35 @@ pip install mace-torch
 4. **Structure Optimization**: Relax subcells to find stable crystalline phases.
 5. **Analysis**: Characterize discovered structures using symmetry analysis.
 
+## Development
+
+Install dev dependencies:
+```bash
+# with pip
+pip install -e ".[dev,test]"
+
+# with uv
+uv pip install -e ".[dev,test]"
+```
+
+Set up pre-commit hooks:
+```bash
+pre-commit install
+```
+
+Run checks:
+```bash
+ruff check          # lint
+ruff format         # format
+ty check           # type check
+pytest             # test
+
+# or with uvx (no install needed)
+uvx ruff check
+uvx ruff format
+uvx ty check
+```
+
 ## References
 
 1. Aykol, M., Merchant, A., Batzner, S. et al. Predicting emergence of crystals from amorphous precursors with deep learning potentials. Nat Comput Sci 5, 105–111 (2025). [DOI: 10.1038/s43588-024-00752-y](https://doi.org/10.1038/s43588-024-00752-y)

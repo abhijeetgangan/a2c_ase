@@ -3,19 +3,16 @@
 from collections import defaultdict
 
 import numpy as np
-from tqdm import tqdm
-
+from ase.build import bulk
+from mace.calculators.foundations_models import mace_mp
 from pymatgen.analysis.structure_analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.structure_matcher import StructureMatcher
 from pymatgen.core.composition import Composition
 from pymatgen.core.structure import Structure
-
+from tqdm import tqdm
 
 from a2c_ase.runner import melt_quench_md, relax_unit_cell
 from a2c_ase.utils import extract_crystallizable_subcells, random_packed_structure
-
-from ase.build import bulk
-from mace.calculators.foundations_models import mace_mp
 
 # System configuration
 comp = Composition("Si64")
@@ -87,7 +84,7 @@ print(f"Generated {len(crystallizable_cells)} candidate structures for crystalli
 # Relax all candidate structures and find the lowest energy one
 relaxed_atoms_list = []
 print("Relaxing candidate structures...")
-for idx, atoms in enumerate(tqdm(crystallizable_cells)):
+for atoms in tqdm(crystallizable_cells):
     # Relax the structure
     relaxed_atoms, logger = relax_unit_cell(
         atoms=atoms, calculator=calculator, max_iter=max_iter, fmax=fmax, verbose=False
@@ -116,7 +113,8 @@ pymatgen_struct = Structure(
 spg = SpacegroupAnalyzer(pymatgen_struct)
 print("Space group of predicted crystallization product:", spg.get_space_group_symbol())
 print(
-    f"Final energy: {lowest_e_energy:.4f} eV, Energy per atom: {lowest_e_energy / len(lowest_e_atoms):.4f} eV/atom"
+    f"Final energy: {lowest_e_energy:.4f} eV, "
+    f"Energy per atom: {lowest_e_energy / len(lowest_e_atoms):.4f} eV/atom"
 )
 print(f"Final pressure: {lowest_e_pressure:.6f} eV/Å³")
 
@@ -147,7 +145,10 @@ pymatgen_ref_struct = Structure(
     coords=si_diamond.get_positions(),
     coords_are_cartesian=True,
 )
-print("Prediction matches diamond-cubic Si?", StructureMatcher().fit(pymatgen_struct, pymatgen_ref_struct))
+print(
+    "Prediction matches diamond-cubic Si?",
+    StructureMatcher().fit(pymatgen_struct, pymatgen_ref_struct),
+)
 
 # Save the lowest energy structure
 lowest_e_atoms.write("final_crystal_structure.cif")
