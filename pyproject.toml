@@ -30,4 +30,4 @@ select = ["E", "F", "B", "I"]
 known-first-party = ["a2c_ase"]
 
 [tool.ty]
-exclude = ["example"]
+src = ["a2c_ase", "tests"]
