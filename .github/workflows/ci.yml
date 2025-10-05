@@ -38,6 +38,9 @@ jobs:
     - name: Test with pytest
       run: uv run pytest --cov=a2c_ase --cov-report=xml tests/
 
+    - name: Run example Si64
+      run: uv run example/Si64.py
+
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v5
       with:

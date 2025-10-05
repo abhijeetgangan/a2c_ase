@@ -11,6 +11,7 @@
 # ]
 # ///
 
+import os
 from collections import defaultdict
 
 import numpy as np
@@ -25,6 +26,9 @@ from tqdm import tqdm
 from a2c_ase.runner import melt_quench_md, relax_unit_cell
 from a2c_ase.utils import extract_crystallizable_subcells, random_packed_structure
 
+# Check if running in CI for fast testing
+IS_CI = os.getenv("CI") is not None
+
 # System configuration
 comp = Composition("Si64")
 cell = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
@@ -32,23 +36,27 @@ cell = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
 # Optimization parameters
 global_seed = 42
 fmax = 0.01  # Force convergence criterion in eV/Å
-max_iter = 100
+max_iter = 10 if IS_CI else 100
 
 # Molecular dynamics parameters
 md_log_interval = 50
-md_equi_steps = 2500  # High temperature equilibration steps
-md_cool_steps = 2500  # Cooling steps
-md_final_steps = 2500  # Low temperature equilibration steps
+md_equi_steps = 10 if IS_CI else 2500  # High temperature equilibration steps
+md_cool_steps = 10 if IS_CI else 2500  # Cooling steps
+md_final_steps = 10 if IS_CI else 2500  # Low temperature equilibration steps
 md_T_high = 2000.0  # Initial melting temperature (K)
 md_T_low = 300.0  # Final temperature (K)
 md_time_step = 2.0  # fs
 md_friction = 0.01  # Langevin friction
 
+if IS_CI:
+    print("Running in CI mode with reduced parameters for fast testing")
+
 # Initialize MACE calculator
 mace_checkpoint_url = (
     "https://github.com/ACEsuit/mace-mp/releases/download/mace_omat_0/mace-omat-0-medium.model"
 )
-calculator = mace_mp(model=mace_checkpoint_url, device="cuda", dtype="float32", enable_cueq=False)
+device = "cpu" if IS_CI else "cuda"
+calculator = mace_mp(model=mace_checkpoint_url, device=device, dtype="float32", enable_cueq=False)
 
 # Generate initial random structure
 packed_atoms, log_data = random_packed_structure(
