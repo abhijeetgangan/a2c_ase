@@ -22,7 +22,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mkdocs-material mkdocstrings[python]
+          pip install -e ".[docs]"
+          pip install mace-torch
+          python -m ipykernel install --user --name python3
+
+      - name: Convert and execute Si64.py
+        run: |
+          jupytext --to notebook --execute example/Si64.py -o docs/examples/Si64.ipynb
+        env:
+          CI: "true"
 
       - name: Build docs
         run: mkdocs build --strict

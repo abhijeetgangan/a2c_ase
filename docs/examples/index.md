@@ -6,26 +6,11 @@ Practical examples demonstrating the a2c workflow.
 
 ### Si64.py - Silicon Crystallization
 
-Predicts the crystal structure of silicon from an amorphous precursor using MACE.
+Complete a2c workflow with executed outputs from CI.
 
-**Source**: [`example/Si64.py`](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py)
+[View Executed Notebook →](Si64.ipynb){ .md-button .md-button--primary }
 
-**What it does**:
-
-1. Generates random Si64 structure (64 atoms)
-2. Melts at 2000K using MACE potential
-3. Quenches to 300K to create amorphous structure
-4. Extracts crystalline subcells
-5. Optimizes each subcell
-6. Symmetry analysis the structure to match the diamond cubic structure
-
-**Run it**:
-```bash
-git clone https://github.com/abhijeetgangan/a2c_ase.git
-cd a2c_ase
-pip install -e . && pip install mace-torch
-python example/Si64.py
-```
+[Source on GitHub →](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py){ .md-button }
 
 ## Key Parameters Reference
 
