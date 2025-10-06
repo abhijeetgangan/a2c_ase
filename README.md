@@ -41,9 +41,6 @@ Install dev dependencies:
 ```bash
 # with pip
 pip install -e ".[dev,test]"
-
-# with uv
-uv pip install -e ".[dev,test]"
 ```
 
 Set up pre-commit hooks:
@@ -57,11 +54,6 @@ ruff check         # lint
 ruff format        # format
 ty check           # type check
 pytest             # test
-
-# or with uvx (no install needed)
-uvx ruff check
-uvx ruff format
-uvx ty check
 ```
 
 ## References

@@ -5,9 +5,24 @@ from ase.stress import full_3x3_to_voigt_6_stress
 
 
 class MultiLennardJones(Calculator):
-    """Multi-species Lennard Jones potential calculator
+    """Multi-species Lennard-Jones potential calculator.
 
-    see https://en.wikipedia.org/wiki/Lennard-Jones_potential
+    Implements the classic 12-6 Lennard-Jones potential with support for multiple
+    chemical species, mixing rules, and custom cross-interactions.
+
+    Attributes
+    ----------
+    implemented_properties : list of str
+        Calculable properties: energy, energies, forces, free_energy, stress, stresses
+    default_parameters : dict
+        Default values: epsilon=1.0, sigma=1.0, rc=None, ro=None, smooth=False,
+        mixing_rule='lorentz_berthelot', cross_interactions=None
+
+    Notes
+    -----
+    The 12-6 Lennard-Jones potential between atoms i and j.
+    Energy: \\(u_{ij}(r) = 4\\epsilon_{ij}[(\\sigma_{ij}/r)^{12} - (\\sigma_{ij}/r)^6]\\).
+    See https://en.wikipedia.org/wiki/Lennard-Jones_potential for details.
     """
 
     implemented_properties = ["energy", "energies", "forces", "free_energy"]
@@ -24,40 +39,28 @@ class MultiLennardJones(Calculator):
     nolabel = True
 
     def __init__(self, **kwargs):
-        """
+        """Initialize Multi-Lennard-Jones calculator.
+
         Parameters
         ----------
-        sigma: float, dict, or array-like
-          If float: uniform sigma for all species, default 1.0
-          If dict: mapping from atomic symbols to sigma values
-          If array-like: sigma values indexed by atomic numbers
-        epsilon: float, dict, or array-like
-          If float: uniform epsilon for all species, default 1.0
-          If dict: mapping from atomic symbols to epsilon values
-          If array-like: epsilon values indexed by atomic numbers
-        rc: float, None
-          Cut-off for the NeighborList. If None, set to 3 * max(sigma).
-          Default None
-        ro: float, None
-          Onset of cutoff function in 'smooth' mode. Defaults to 0.66 * rc.
-        smooth: bool, False
-          Cutoff mode. False means that the pairwise energy is simply shifted
-          to be 0 at r = rc, leading to the energy going to 0 continuously,
-          but the forces jumping to zero discontinuously at the cutoff.
-          True means that a smooth cutoff function is multiplied to the pairwise
-          energy that smoothly goes to 0 between ro and rc.
-        mixing_rule: str, 'lorentz_berthelot'
-          Mixing rule for cross-species interactions:
-          - 'lorentz_berthelot': sigma_ij = (sigma_i + sigma_j)/2,
-                                epsilon_ij = sqrt(epsilon_i * epsilon_j)
-          - 'geometric': sigma_ij = sqrt(sigma_i * sigma_j),
-                        epsilon_ij = sqrt(epsilon_i * epsilon_j)
-        cross_interactions: dict, None
-          Dictionary specifying explicit cross-interaction parameters.
-          Format: {('A', 'B'): {'sigma': value, 'epsilon': value}}
-          If provided, these override mixing rules for specified pairs.
-          Example for Kob-Andersen:
-          cross_interactions={('A', 'B'): {'sigma': 0.8, 'epsilon': 1.5}}
+        **kwargs : dict
+            Calculator parameters. Supported parameters:
+
+            - sigma (float, dict, or array-like): Zero-crossing distance.
+              Default 1.0. Can be uniform float, dict mapping symbols to values,
+              or array indexed by atomic number.
+            - epsilon (float, dict, or array-like): Well depth. Default 1.0.
+              Can be uniform float, dict mapping symbols to values,
+              or array indexed by atomic number.
+            - rc (float, optional): Cutoff distance.
+              Default None (auto: 3 * max(sigma)).
+            - ro (float, optional): Smooth cutoff onset distance.
+              Default None (auto: 0.66 * rc).
+            - smooth (bool): Use smooth cutoff function. Default False.
+            - mixing_rule (str): Mixing rule for cross-species.
+              Default 'lorentz_berthelot'. Options: 'lorentz_berthelot' or 'geometric'.
+            - cross_interactions (dict, optional): Explicit cross-interaction parameters.
+              Format: {('A', 'B'): {'sigma': value, 'epsilon': value}}.
 
         """
 
@@ -152,6 +155,17 @@ class MultiLennardJones(Calculator):
         properties=None,
         system_changes=all_changes,
     ):
+        """Calculate energy, forces and stress using Lennard-Jones potential.
+
+        Parameters
+        ----------
+        atoms : Atoms, optional
+            ASE Atoms object containing atomic positions and cell
+        properties : list of str, optional
+            Properties to calculate. If None, calculates all implemented properties
+        system_changes : list of str, optional
+            List of changes since last calculation
+        """
         if properties is None:
             properties = self.implemented_properties
 
@@ -249,19 +263,30 @@ class MultiLennardJones(Calculator):
         self.results["forces"] = forces
 
 
-def cutoff_function(r, rc, ro):
-    """Smooth cutoff function.
+def cutoff_function(r: np.ndarray, rc: float, ro: float) -> np.ndarray:
+    """Smooth cutoff function for Lennard-Jones potential.
 
-    Goes from 1 to 0 between ro and rc, ensuring
-    that u(r) = lj(r) * cutoff_function(r) is C^1.
+    Goes from 1 to 0 between ro and rc, ensuring that u(r) = lj(r) * cutoff_function(r)
+    is continuously differentiable (C^1). Defined as 1 below ro, 0 above rc.
 
-    Defined as 1 below ro, 0 above rc.
+    Parameters
+    ----------
+    r : float or np.ndarray
+        Squared distance r_ij^2
+    rc : float
+        Squared cutoff distance
+    ro : float
+        Squared onset distance for cutoff
 
-    Note that r, rc, ro are all expected to be squared,
-    i.e. `r = r_ij^2`, etc.
+    Returns
+    -------
+    float or np.ndarray
+        Cutoff function value(s)
 
+    Notes
+    -----
+    All distances (r, rc, ro) are expected to be squared.
     Taken from https://github.com/google/jax-md.
-
     """
 
     return np.where(
@@ -271,13 +296,28 @@ def cutoff_function(r, rc, ro):
     )
 
 
-def d_cutoff_function(r, rc, ro):
-    """Derivative of smooth cutoff function wrt r.
+def d_cutoff_function(r: np.ndarray, rc: float, ro: float) -> np.ndarray:
+    """Derivative of smooth cutoff function with respect to r.
 
-    Note that `r = r_ij^2`, so for the derivative wrt to `r_ij`,
-    we need to multiply `2*r_ij`. This gives rise to the factor 2
-    above, the `r_ij` is cancelled out by the remaining derivative
-    `d r_ij / d d_ij`, i.e. going from scalar distance to distance vector.
+    Parameters
+    ----------
+    r : float or np.ndarray
+        Squared distance r_ij^2
+    rc : float
+        Squared cutoff distance
+    ro : float
+        Squared onset distance for cutoff
+
+    Returns
+    -------
+    float or np.ndarray
+        Derivative of cutoff function
+
+    Notes
+    -----
+    Since r = r_ij^2, for the derivative with respect to r_ij, multiply by 2*r_ij.
+    The factor of 2 appears naturally, and r_ij cancels when converting from scalar
+    distance to distance vector (d r_ij / d d_ij).
     """
 
     return np.where(
