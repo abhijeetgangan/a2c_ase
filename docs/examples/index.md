@@ -2,31 +2,31 @@
 
 Practical examples demonstrating the a2c workflow.
 
-## Available Examples
+---
 
-### Si64.py - Silicon Crystallization
+## 1. Si64 - Silicon Crystallization
 
-Complete a2c workflow with executed outputs from CI.
+Complete a2c workflow for predicting silicon's crystal structure from an amorphous precursor.
 
-[View Executed Notebook →](Si64.ipynb){ .md-button .md-button--primary }
+[Tutorial Docs](Si64.ipynb){ .md-button }
+[Source Code](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py){ .md-button }
 
-[Source on GitHub →](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py){ .md-button }
-
-## Key Parameters Reference
-
-| Parameter | Typical Value | Purpose |
-|-----------|---------------|---------|
-| `T_high` | 1500-2500 K | Melting temperature |
-| `T_low` | 300 K | Final temperature |
-| `equi_steps` | 2500 | High-T equilibration |
-| `cool_steps` | 2500 | Cooling duration |
-| `d_frac` | 0.2 | Subcell grid spacing |
-| `n_min, n_max` | 2, 8 | Atom count range |
-| `fmax` | 0.01 eV/Å | Force convergence |
+**Demonstrates**: Random structure generation, melt-quench MD, subcell extraction, optimization, and space group analysis.
 
 ---
 
-## Next Steps
+## 2. Hull - Kob-Andersen Binary System Hull
+
+Hull exploration with a2c workflow for the classic Kob-Andersen binary Lennard-Jones glass former (Ni80P20).
+
+[Tutorial Docs](hull.ipynb){ .md-button }
+[Source Code](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/hull.py){ .md-button }
+
+**Demonstrates**: Binary systems, metal/LJ units, custom cross-interactions, composition analysis.
+
+---
+
+## See Also
 
 - **Understand the workflow**: [User Guide](../user-guide/workflow.md)
 - **API documentation**: [Runner](../api/runner.md) | [Utils](../api/utils.md)
