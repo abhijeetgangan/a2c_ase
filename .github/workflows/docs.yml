@@ -32,6 +32,12 @@ jobs:
         env:
           CI: "true"
 
+      - name: Convert and execute hull.py
+        run: |
+          jupytext --to notebook --execute example/hull.py -o docs/examples/hull.ipynb
+        env:
+          CI: "true"
+
       - name: Build docs
         run: mkdocs build --strict
 
