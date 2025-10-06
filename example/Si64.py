@@ -32,7 +32,7 @@ from collections import defaultdict
 
 import numpy as np
 from ase.build import bulk
-from mace.calculators.foundations_models import mace_mp
+from mace.calculators.foundations_models import mace_mp  # type: ignore
 from pymatgen.analysis.structure_analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.structure_matcher import StructureMatcher
 from pymatgen.core.composition import Composition

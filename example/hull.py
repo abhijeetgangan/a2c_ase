@@ -31,6 +31,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
+from ase.build import bulk
 from pymatgen.analysis.phase_diagram import PDEntry, PDPlotter, PhaseDiagram
 from pymatgen.core.composition import Composition
 from tqdm import tqdm
@@ -192,25 +193,50 @@ for atoms, _, total_e in relaxed_structures:
     comp_obj = Composition("".join(atoms.get_chemical_symbols()))
     entries.append(PDEntry(comp_obj, total_e))
 
-# Compute reference energies for pure elements by relaxing single-atom cells
-print("\nComputing reference energies for pure elements...")
+# Compute reference energies using proper crystal structures
+print("\nComputing reference energies...")
 
-# Pure Ni reference
-ni_atoms = Atoms("Ni", positions=[[0, 0, 0]], cell=[2.0, 2.0, 2.0], pbc=True)
-ni_relaxed, _ = relax_unit_cell(ni_atoms, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
-e_ni = ni_relaxed.get_potential_energy()
-print(f"Pure Ni energy: {e_ni:.4f} ε")
+# Pure Ni: FCC structure
+ni_fcc = bulk("Ni", "fcc", a=1.5)
+ni_relaxed, _ = relax_unit_cell(ni_fcc, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+e_ni_total = ni_relaxed.get_potential_energy()
+print(f"Ni (FCC): {e_ni_total / len(ni_relaxed):.4f} ε/atom")
 
-# Pure P reference
-p_atoms = Atoms("P", positions=[[0, 0, 0]], cell=[2.0, 2.0, 2.0], pbc=True)
-p_relaxed, _ = relax_unit_cell(p_atoms, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
-e_p = p_relaxed.get_potential_energy()
-print(f"Pure P energy: {e_p:.4f} ε")
+# Pure P: FCC structure
+p_fcc = bulk("P", "fcc", a=1.3)
+p_relaxed, _ = relax_unit_cell(p_fcc, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+e_p_total = p_relaxed.get_potential_energy()
+print(f"P (FCC): {e_p_total / len(p_relaxed):.4f} ε/atom")
 
-entries.extend([PDEntry(Composition("Ni"), e_ni), PDEntry(Composition("P"), e_p)])
+# Ni4P structure
+alat = 4.0
+ni4p = Atoms(
+    "Ni4P",
+    positions=[
+        [0.0, 0.0, 0.0],
+        [0.0, alat / 2, alat / 2],
+        [alat / 2, 0.0, alat / 2],
+        [alat / 2, alat / 2, 0.0],
+        [alat / 2, alat / 2, alat / 2],
+    ],
+    cell=[alat, alat, alat],
+    pbc=True,
+)
+ni4p_relaxed, _ = relax_unit_cell(ni4p, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+e_ni4p_total = ni4p_relaxed.get_potential_energy()
+print(f"Ni4P (Rocksalt): {e_ni4p_total / len(ni4p_relaxed):.4f} ε/atom")
+
+# Add references with TOTAL energies
+entries.extend(
+    [
+        PDEntry(Composition("Ni"), e_ni_total),
+        PDEntry(Composition("P"), e_p_total),
+        PDEntry(Composition("Ni4P"), e_ni4p_total),
+    ]
+)
 pd = PhaseDiagram(entries)
 
-for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures[:10]):
+for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures):
     comp_obj = Composition("".join(atoms.get_chemical_symbols()))
     entry = PDEntry(comp_obj, total_e)
     e_above_hull = pd.get_e_above_hull(entry)
@@ -224,7 +250,7 @@ for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures[:10]):
 print(f"\nTotal structures analyzed: {len(relaxed_structures)}")
 
 # Plot and save phase diagram
-plotter = PDPlotter(pd, show_unstable=True, backend="matplotlib")
+plotter = PDPlotter(pd, show_unstable=10.0, backend="matplotlib")
 plotter.get_plot()
 plt.savefig("convex_hull.png", dpi=150, bbox_inches="tight")
 print("Phase diagram saved to convex_hull.png")
