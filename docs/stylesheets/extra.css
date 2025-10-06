@@ -1,0 +1,23 @@
+/* Increase main content width */
+.md-grid {
+    max-width: 70rem; /* Increased from default 61rem */
+}
+
+/* Reduce sidebar width to give more space to content */
+.md-sidebar--primary {
+    width: 12rem; /* Reduced from default 12.1rem */
+}
+
+.md-sidebar--secondary {
+    width: 12rem; /* Reduced from default 12.1rem */
+}
+
+/* Adjust content margin to utilize the extra space */
+@media screen and (min-width: 76.25em) {
+    .md-sidebar--primary {
+        width: 12rem;
+    }
+    .md-sidebar--secondary {
+        width: 12rem;
+    }
+}

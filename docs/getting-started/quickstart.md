@@ -7,14 +7,14 @@ Get started with `a2c_ase` in minutes.
 - `a2c_ase` installed ([Installation Guide](installation.md))
 - A calculator installed (MACE)
 
-=== "uv"
-    ```bash
-    uv pip install mace-torch
-    ```
-
 === "pip"
     ```bash
     pip install mace-torch
+    ```
+
+=== "uv"
+    ```bash
+    uv pip install mace-torch
     ```
 
 ## Five-Step Workflow
@@ -78,8 +78,6 @@ from pymatgen.analysis.structure_analyzer import SpacegroupAnalyzer
 ## Complete Example
 
 See the full working example: [**example/Si64.py**](../examples/index.md)
-
-For silicon, the workflow predicts the diamond cubic structure (Fd-3m).
 
 ---
 
