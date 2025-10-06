@@ -28,6 +28,7 @@
 # %%
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
 from pymatgen.analysis.phase_diagram import PDEntry, PDPlotter, PhaseDiagram
@@ -224,6 +225,6 @@ print(f"\nTotal structures analyzed: {len(relaxed_structures)}")
 
 # Plot and save phase diagram
 plotter = PDPlotter(pd, show_unstable=True, backend="matplotlib")
-fig = plotter.get_plot()
-fig.savefig("convex_hull.png", dpi=150, bbox_inches="tight")
+plotter.get_plot()
+plt.savefig("convex_hull.png", dpi=150, bbox_inches="tight")
 print("Phase diagram saved to convex_hull.png")
