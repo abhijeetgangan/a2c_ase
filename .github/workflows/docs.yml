@@ -27,7 +27,7 @@ jobs:
 
       - name: Convert and execute Si64.py
         run: |
-          jupytext --to notebook --execute example/Si64.py -o docs/examples/si64.ipynb
+          jupytext --to notebook --execute example/Si64.py -o docs/examples/Si64.ipynb
         env:
           CI: "true"
 

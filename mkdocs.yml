@@ -103,5 +103,5 @@ nav:
     - Potentials: api/potentials.md
   - Examples:
     - Overview: examples/index.md
-    - Si64 Notebook: examples/si64.ipynb
+    - Si64 Notebook: examples/Si64.ipynb
   - Development: development/contributing.md

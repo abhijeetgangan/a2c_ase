@@ -175,4 +175,4 @@ cython_debug/
 htmlcov/
 
 # Generated notebooks during docs build
-docs/examples/*.ipynb
+docs/examples/Si64.ipynb

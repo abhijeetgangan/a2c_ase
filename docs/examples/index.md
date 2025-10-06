@@ -8,7 +8,7 @@ Practical examples demonstrating the a2c workflow.
 
 Complete a2c workflow with executed outputs from CI.
 
-[View Executed Notebook →](si64.ipynb){ .md-button .md-button--primary }
+[View Executed Notebook →](Si64.ipynb){ .md-button .md-button--primary }
 
 [Source on GitHub →](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py){ .md-button }
 
