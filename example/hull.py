@@ -29,6 +29,7 @@
 import os
 
 import numpy as np
+from ase import Atoms
 from pymatgen.analysis.phase_diagram import PDEntry, PDPlotter, PhaseDiagram
 from pymatgen.core.composition import Composition
 from tqdm import tqdm
@@ -184,11 +185,28 @@ print(f"Successfully optimized {len(relaxed_structures)} structures")
 
 # %%
 # Build convex hull
-entries = [
-    PDEntry(Composition("".join(atoms.get_chemical_symbols())), total_e)
-    for atoms, _, total_e in relaxed_structures
-]
-entries.extend([PDEntry(Composition("Ni"), 0.0), PDEntry(Composition("P"), 0.0)])
+# Create entries with proper composition normalization
+entries = []
+for atoms, _, total_e in relaxed_structures:
+    comp_obj = Composition("".join(atoms.get_chemical_symbols()))
+    entries.append(PDEntry(comp_obj, total_e))
+
+# Compute reference energies for pure elements by relaxing single-atom cells
+print("\nComputing reference energies for pure elements...")
+
+# Pure Ni reference
+ni_atoms = Atoms("Ni", positions=[[0, 0, 0]], cell=[2.0, 2.0, 2.0], pbc=True)
+ni_relaxed, _ = relax_unit_cell(ni_atoms, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+e_ni = ni_relaxed.get_potential_energy()
+print(f"Pure Ni energy: {e_ni:.4f} ε")
+
+# Pure P reference
+p_atoms = Atoms("P", positions=[[0, 0, 0]], cell=[2.0, 2.0, 2.0], pbc=True)
+p_relaxed, _ = relax_unit_cell(p_atoms, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+e_p = p_relaxed.get_potential_energy()
+print(f"Pure P energy: {e_p:.4f} ε")
+
+entries.extend([PDEntry(Composition("Ni"), e_ni), PDEntry(Composition("P"), e_p)])
 pd = PhaseDiagram(entries)
 
 for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures[:10]):
@@ -204,6 +222,8 @@ for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures[:10]):
 
 print(f"\nTotal structures analyzed: {len(relaxed_structures)}")
 
-# Plot phase diagram showing all structures
-plotter = PDPlotter(pd, show_unstable=True)
-plotter.show()
+# Plot and save phase diagram
+plotter = PDPlotter(pd, show_unstable=True, backend="matplotlib")
+fig = plotter.get_plot()
+fig.savefig("convex_hull.png", dpi=150, bbox_inches="tight")
+print("Phase diagram saved to convex_hull.png")
