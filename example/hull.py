@@ -29,6 +29,7 @@
 
 # %%
 import os
+from collections import Counter
 
 import numpy as np
 from ase import Atoms
@@ -187,11 +188,12 @@ print(f"Successfully optimized {len(relaxed_structures)} structures")
 # Determine thermodynamic stability using pymatgen's phase diagram.
 
 # %%
-# Build convex hull
-# Create entries with proper composition normalization
+# Build convex hull with proper composition handling
 entries = []
 for atoms, _, total_e in relaxed_structures:
-    comp_obj = Composition("".join(atoms.get_chemical_symbols()))
+    # Get composition from symbol counts (more explicit and correct)
+    symbol_counts = Counter(atoms.get_chemical_symbols())
+    comp_obj = Composition(symbol_counts)  # e.g., {'Ni': 2, 'P': 1} -> Ni2P
     entries.append(PDEntry(comp_obj, total_e))
 
 # Compute reference energies using proper crystal structures
@@ -238,7 +240,8 @@ entries.extend(
 pd = PhaseDiagram(entries)
 
 for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures):
-    comp_obj = Composition("".join(atoms.get_chemical_symbols()))
+    symbol_counts = Counter(atoms.get_chemical_symbols())
+    comp_obj = Composition(symbol_counts)
     entry = PDEntry(comp_obj, total_e)
     e_above_hull = pd.get_e_above_hull(entry)
 
@@ -255,4 +258,3 @@ print(f"Total entries in phase diagram: {len(entries)}")
 plotter = PDPlotter(pd, show_unstable=1000.0, backend="plotly")  # Very large value to show all
 plotter.get_plot()
 plotter.show()
-print("Phase diagram saved to convex_hull.pdf")
