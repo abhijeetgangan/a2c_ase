@@ -37,7 +37,7 @@ cell = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
 # Optimization parameters
 global_seed = 42
 fmax = 0.01  # Force convergence criterion in eV/Å
-max_iter = 10 if IS_CI else 100
+max_iter = 2 if IS_CI else 100
 
 # Molecular dynamics parameters
 md_log_interval = 50
