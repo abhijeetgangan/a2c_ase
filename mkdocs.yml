@@ -1,0 +1,91 @@
+site_name: a2c_ase
+site_description: ASE-friendly implementation of the amorphous-to-crystalline (a2c) workflow
+site_author: Abhijeet Gangan
+site_url: https://abhijeetgangan.github.io/a2c_ase
+
+repo_name: abhijeetgangan/a2c_ase
+repo_url: https://github.com/abhijeetgangan/a2c_ase
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: numpy
+            show_source: false
+            docstring_section_style: table
+            filters: ["!^_"]
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.arithmatex:
+      generic: true
+  - tables
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/abhijeetgangan/a2c_ase
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+  - User Guide: user-guide/workflow.md
+  - Potentials:
+    - Overview: potentials/overview.md
+    - Soft Sphere: potentials/soft-sphere.md
+    - Multi-Lennard-Jones: potentials/multi-lj.md
+  - API Reference:
+    - Runner: api/runner.md
+    - Utils: api/utils.md
+    - Potentials: api/potentials.md
+  - Examples: examples/index.md
+  - Development: development/contributing.md
