@@ -9,6 +9,8 @@
 #     "numpy",
 #     "pymatgen",
 #     "tqdm",
+#     "plotly",
+#     "kaleido",
 # ]
 # ///
 # </details>
@@ -28,7 +30,6 @@
 # %%
 import os
 
-import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
 from ase.build import bulk
@@ -248,9 +249,10 @@ for i, (atoms, e_per_atom, total_e) in enumerate(relaxed_structures):
     )
 
 print(f"\nTotal structures analyzed: {len(relaxed_structures)}")
+print(f"Total entries in phase diagram: {len(entries)}")
 
 # Plot and save phase diagram
-plotter = PDPlotter(pd, show_unstable=10.0, backend="matplotlib")
+plotter = PDPlotter(pd, show_unstable=1000.0, backend="plotly")  # Very large value to show all
 plotter.get_plot()
-plt.savefig("convex_hull.png", dpi=150, bbox_inches="tight")
-print("Phase diagram saved to convex_hull.png")
+plotter.show()
+print("Phase diagram saved to convex_hull.pdf")
