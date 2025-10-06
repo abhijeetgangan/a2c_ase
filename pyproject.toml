@@ -16,6 +16,7 @@ docs = [
     "mkdocstrings[python]>=0.24",
     "mkdocs-jupyter>=0.24",
     "jupytext>=1.16",
+    "ipykernel>=6.0",
 ]
 
 [build-system]
