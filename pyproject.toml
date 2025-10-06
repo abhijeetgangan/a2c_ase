@@ -11,6 +11,10 @@ dependencies = ["ase", "numpy", "pymatgen", "tqdm"]
 [project.optional-dependencies]
 dev = ["pre-commit", "ruff", "ty>=0.0.1a20"]
 test = ["pytest", "pytest-cov"]
+docs = [
+    "mkdocs-material>=9.0",
+    "mkdocstrings[python]>=0.24",
+]
 
 [build-system]
 requires = ["setuptools>=61.0"]

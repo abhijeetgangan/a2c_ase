@@ -26,75 +26,24 @@ from ase.stress import full_3x3_to_voigt_6_stress
 
 
 class SoftSphere(Calculator):
-    r"""Soft Sphere potential calculator.
+    """Soft sphere potential calculator for purely repulsive interactions.
 
-    The fundamental definition of this potential is a pairwise energy:
+    Implements a soft repulsive potential used for structure generation and packing
+    optimization. The potential is zero when r >= sigma and purely repulsive for r < sigma.
 
-    ``u_ij =  \epsilon / \alpha * (1 - (r_ij / sigma)^{\alpha})``
+    Attributes
+    ----------
+    implemented_properties : list of str
+        Calculable properties: energy, energies, forces, free_energy, stress, stresses
+    default_parameters : dict
+        Default values: sigma=1.0, epsilon=1.0, alpha=2, skin=0.2
 
-    For convenience, we'll use d_ij to refer to "distance vector" and
-    ``r_ij`` to refer to "scalar distance". So, with position vectors `r_i`:
-
-    ``r_ij = | r_j - r_i | = | d_ij |``
-
-    Therefore:
-
-    ``d r_ij / d d_ij = + d_ij / r_ij``
-    ``d r_ij / d d_i  = - d_ij / r_ij``
-
-    The derivative of u_ij is:
-
-    ::
-
-        d u_ij / d r_ij
-        = - \epsilon / \sigma * (1 - r_ij / \sigma)^{\alpha - 1}
-
-    We can define a "pairwise force"
-
-    ``f_ij = d u_ij / d d_ij = d u_ij / d r_ij * d_ij / r_ij``
-
-    The terms in front of d_ij are combined into a "general derivative".
-
-    ``du_ij = (d u_ij / d d_ij) / r_ij``
-
-    We do this for convenience: `du_ij` is purely scalar The pairwise force is:
-
-    ``f_ij = du_ij * d_ij``
-
-    The total force on an atom is:
-
-    ``f_i = sum_(j != i) f_ij``
-
-    There is some freedom of choice in assigning atomic energies, i.e.
-    choosing a way to partition the total energy into atomic contributions.
-
-    We choose a symmetric approach (`bothways=True` in the neighbor list):
-
-    ``u_i = 1/2 sum_(j != i) u_ij``
-
-    The total energy of a system of atoms is then:
-
-    ``u = sum_i u_i = 1/2 sum_(i, j != i) u_ij``
-
-    Differentiating `u` with respect to `r_i` yields the force,
-    independent of the choice of partitioning.
-
-    ::
-
-        f_i = - d u / d r_i = - sum_ij d u_ij / d r_i
-            = - sum_ij d u_ij / d r_ij * d r_ij / d r_i
-            = sum_ij du_ij d_ij = sum_ij f_ij
-
-    This justifies calling `f_ij` pairwise forces.
-
-    The stress can be written as ( `(x)` denoting outer product):
-
-    ``sigma = 1/2 sum_(i, j != i) f_ij (x) d_ij = sum_i sigma_i ,``
-    with atomic contributions
-
-    ``sigma_i  = 1/2 sum_(j != i) f_ij (x) d_ij``
-
-    This approach is taken from Jax-MD (https://github.com/google/jax-md)
+    Notes
+    -----
+    The pairwise energy is \\(u_{ij} = \\frac{\\epsilon}{\\alpha}\\) times
+    \\(\\left(1 - \\frac{r_{ij}}{\\sigma}\\right)^{\\alpha}\\) for \\(r_{ij} < \\sigma\\).
+    Energy partitioning uses symmetric approach with bothways=True neighbor list.
+    Implementation based on JAX-MD (https://github.com/google/jax-md).
     """
 
     # Properties that this calculator can compute
@@ -121,14 +70,13 @@ class SoftSphere(Calculator):
 
         Parameters
         ----------
-        sigma : float, optional
-            Particle diameter, default: 1.0
-        epsilon : float, optional
-            Interaction energy scale, default: 1.0
-        alpha : float, optional
-            Exponent specifying interaction stiffness, default: 2
-        skin : float, optional
-            Skin parameter for neighbor list, default: 0.2
+        **kwargs : dict
+            Calculator parameters. Supported parameters:
+
+            - sigma (float): Particle diameter, default: 1.0
+            - epsilon (float): Interaction energy scale, default: 1.0
+            - alpha (float): Exponent specifying interaction stiffness, default: 2
+            - skin (float): Skin parameter for neighbor list, default: 0.2
         """
         Calculator.__init__(self, **kwargs)
         self.nl = None  # Neighbor list, initialized in calculate()
@@ -139,22 +87,16 @@ class SoftSphere(Calculator):
         properties: Optional[list[str]] = None,
         system_changes: list[str] = all_changes,
     ) -> None:
-        """Calculate the energy, forces and stress of the system.
-
-        This method computes the requested properties for the given atomic configuration
-        using the soft sphere potential. The calculation includes:
-        - Energy (total and per-atom)
-        - Forces on each atom
-        - Stress tensor (if applicable)
+        """Calculate energy, forces and stress using soft sphere potential.
 
         Parameters
         ----------
-        atoms : Atoms object, optional
-            Contains positions, unit-cell, etc. If None, uses the stored atoms.
+        atoms : Atoms, optional
+            ASE Atoms object containing atomic positions and cell
         properties : list of str, optional
-            List of what needs to be calculated. If None, calculates all implemented properties.
+            Properties to calculate. If None, calculates all implemented properties
         system_changes : list of str, optional
-            List of what has changed since last calculation.
+            List of changes since last calculation
         """
         # Use all implemented properties if none specified
         if properties is None:
