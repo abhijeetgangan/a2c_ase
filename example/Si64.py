@@ -1,10 +1,6 @@
-"""
-# Silicon Crystallization Example
-
-This example demonstrates the complete a2c workflow for predicting the crystal structure
-of silicon from an amorphous precursor using the MACE machine learning potential.
-"""
-
+# %% [markdown]
+# <details>
+#   <summary>Dependencies</summary>
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
@@ -16,6 +12,14 @@ of silicon from an amorphous precursor using the MACE machine learning potential
 #     "mace-torch",
 # ]
 # ///
+# </details>
+
+# %% [markdown]
+# Silicon Crystallization Example
+
+# This example demonstrates the complete a2c workflow for predicting the crystal structure
+# of silicon from an amorphous precursor using the MACE machine learning potential.
+
 
 # %% [markdown]
 # ## Setup and Imports

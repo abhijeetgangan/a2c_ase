@@ -74,6 +74,7 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
   - tables
+  - attr_list
   - toc:
       permalink: true
 
@@ -103,5 +104,5 @@ nav:
     - Potentials: api/potentials.md
   - Examples:
     - Overview: examples/index.md
-    - Si64 Notebook: examples/Si64.ipynb
+    - Si64: examples/Si64.ipynb
   - Development: development/contributing.md

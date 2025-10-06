@@ -9,7 +9,7 @@
 ## Checklist
 
 - [ ] Tests pass
-- [ ] Code formatted (`ruff format .`)
+- [ ] Code formatted (`ruff format`)
 - [ ] Coverage >= 60%
 - [ ] Type hints added
 - [ ] Docstrings updated
