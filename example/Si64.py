@@ -1,4 +1,9 @@
-"""Test script for the a2c workflow for Si64 using MACE."""
+"""
+# Silicon Crystallization Example
+
+This example demonstrates the complete a2c workflow for predicting the crystal structure
+of silicon from an amorphous precursor using the MACE machine learning potential.
+"""
 
 # /// script
 # requires-python = ">=3.10"
@@ -12,6 +17,12 @@
 # ]
 # ///
 
+# %% [markdown]
+# ## Setup and Imports
+#
+# We'll use MACE for accurate energy and force calculations.
+
+# %%
 import os
 from collections import defaultdict
 
@@ -27,10 +38,15 @@ from tqdm import tqdm
 from a2c_ase.runner import melt_quench_md, relax_unit_cell
 from a2c_ase.utils import extract_crystallizable_subcells, random_packed_structure
 
-# Check if running in CI for fast testing
+# %% [markdown]
+# ## Configuration
+#
+# Define the system (Si64) and simulation parameters.
+# In CI mode, we use reduced parameters for faster testing.
+
+# %%
 IS_CI = os.getenv("CI") is not None
 
-# System configuration
 comp = Composition("Si64")
 cell = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
 
@@ -52,14 +68,24 @@ md_friction = 0.01  # Langevin friction
 if IS_CI:
     print("Running in CI mode with reduced parameters for fast testing")
 
-# Initialize MACE calculator
+# %% [markdown]
+# ## Step 1: Initialize MACE Calculator
+#
+# MACE is a state-of-the-art machine learning potential trained on diverse materials data.
+
+# %%
 mace_checkpoint_url = (
     "https://github.com/ACEsuit/mace-mp/releases/download/mace_omat_0/mace-omat-0-medium.model"
 )
 device = "cpu" if IS_CI else "cuda"
 calculator = mace_mp(model=mace_checkpoint_url, device=device, dtype="float32", enable_cueq=False)
 
-# Generate initial random structure
+# %% [markdown]
+# ## Step 2: Generate Random Packed Structure
+#
+# Create an initial random configuration with no severe atomic overlaps.
+
+# %%
 packed_atoms, log_data = random_packed_structure(
     composition=comp,
     cell=cell,
@@ -72,7 +98,12 @@ packed_atoms, log_data = random_packed_structure(
 )
 print(f"Soft sphere packed structure is ready {packed_atoms}")
 
-# Run melt-quench MD to generate amorphous structure
+# %% [markdown]
+# ## Step 3: Melt-Quench MD Simulation
+#
+# Heat to 2000K, quench to 300K to create an amorphous structure.
+
+# %%
 amorphous_atoms, md_log = melt_quench_md(
     atoms=packed_atoms,
     calculator=calculator,
@@ -90,7 +121,12 @@ amorphous_atoms, md_log = melt_quench_md(
 )
 print(f"Final amorphous structure is ready {amorphous_atoms}")
 
-# Extract potential crystalline regions
+# %% [markdown]
+# ## Step 4: Extract Crystallizable Subcells
+#
+# Divide the amorphous structure into overlapping subcells.
+
+# %%
 crystallizable_cells = extract_crystallizable_subcells(
     atoms=amorphous_atoms,
     d_frac=0.2,  # Size of subcell as fraction of original cell
@@ -101,7 +137,12 @@ crystallizable_cells = extract_crystallizable_subcells(
 )
 print(f"Generated {len(crystallizable_cells)} candidate structures for crystallization")
 
-# Relax all candidate structures and find the lowest energy one
+# %% [markdown]
+# ## Step 5: Optimize Subcells
+#
+# Relax each subcell to find stable crystalline structures.
+
+# %%
 relaxed_atoms_list = []
 print("Relaxing candidate structures...")
 for atoms in tqdm(crystallizable_cells):
@@ -117,7 +158,12 @@ for atoms in tqdm(crystallizable_cells):
     # Store the relaxed structure and its properties
     relaxed_atoms_list.append((relaxed_atoms, logger, final_energy, final_pressure))
 
-# Find lowest energy structure
+# %% [markdown]
+# ## Step 6: Analyze Results
+#
+# Find the lowest energy structure and determine its space group.
+
+# %%
 lowest_e_candidate = min(relaxed_atoms_list, key=lambda x: x[-2] / len(x[0]))
 lowest_e_atoms, lowest_e_logger, lowest_e_energy, lowest_e_pressure = lowest_e_candidate
 

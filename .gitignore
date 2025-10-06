@@ -173,3 +173,6 @@ cython_debug/
 # Pytest coverage
 .coverage
 htmlcov/
+
+# Generated notebooks during docs build
+docs/examples/*.ipynb

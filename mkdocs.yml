@@ -35,6 +35,10 @@ theme:
 
 plugins:
   - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      allow_errors: false
   - mkdocstrings:
       handlers:
         python:
@@ -97,5 +101,7 @@ nav:
     - Runner: api/runner.md
     - Utils: api/utils.md
     - Potentials: api/potentials.md
-  - Examples: examples/index.md
+  - Examples:
+    - Overview: examples/index.md
+    - Si64 Notebook: examples/si64.ipynb
   - Development: development/contributing.md
