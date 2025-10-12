@@ -1,5 +1,6 @@
 # a2c_ase
 
+[![PyPI](https://img.shields.io/pypi/v/a2c-ase.svg)](https://pypi.org/project/a2c-ase/)
 [![CI](https://github.com/abhijeetgangan/a2c_ase/actions/workflows/ci.yml/badge.svg)](https://github.com/abhijeetgangan/a2c_ase/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/abhijeetgangan/a2c_ase/branch/main/graph/badge.svg)](https://codecov.io/gh/abhijeetgangan/a2c_ase)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,13 +10,39 @@ An ASE-friendly implementation of the amorphous-to-crystalline (a2c) workflow.
 
 ## Installation
 
+### From PyPI
+
+**With uv (recommended):**
+```bash
+uv pip install a2c-ase
+```
+
+<details>
+<summary>Or with pip</summary>
+
+```bash
+pip install a2c-ase
+```
+</details>
+
 ### From Source
+
+**With uv:**
+```bash
+git clone https://github.com/abhijeetgangan/a2c_ase.git
+cd a2c_ase
+uv pip install .
+```
+
+<details>
+<summary>Or with pip</summary>
 
 ```bash
 git clone https://github.com/abhijeetgangan/a2c_ase.git
 cd a2c_ase
 pip install .
 ```
+</details>
 ## Usage
 See [example/Si64.py](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/Si64.py) for basic usage.
 
