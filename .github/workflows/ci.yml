@@ -41,6 +41,9 @@ jobs:
     - name: Run example Si64
       run: uv run example/Si64.py
 
+    - name: Run example hull
+      run: uv run example/hull.py
+
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v5
       with:

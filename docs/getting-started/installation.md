@@ -5,17 +5,25 @@
 - Python 3.10 or higher
 - pip or uv package manager
 
-## From Source
+## From PyPI (Recommended)
 
-The current recommended way to install `a2c_ase` is from source:
+Install the latest stable release from PyPI:
+
+=== "uv"
+
+    ```bash
+    uv pip install a2c-ase
+    ```
 
 === "pip"
 
     ```bash
-    git clone https://github.com/abhijeetgangan/a2c_ase.git
-    cd a2c_ase
-    pip install .
+    pip install a2c-ase
     ```
+
+## From Source
+
+For development or to get the latest unreleased features:
 
 === "uv"
 
@@ -23,6 +31,14 @@ The current recommended way to install `a2c_ase` is from source:
     git clone https://github.com/abhijeetgangan/a2c_ase.git
     cd a2c_ase
     uv pip install .
+    ```
+
+=== "pip"
+
+    ```bash
+    git clone https://github.com/abhijeetgangan/a2c_ase.git
+    cd a2c_ase
+    pip install .
     ```
 
 ## With Development Dependencies

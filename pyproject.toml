@@ -1,6 +1,6 @@
 [project]
 name = "a2c_ase"
-version = "0.0.1"
+version = "0.0.2"
 description = "ASE friendly implementation of the a2c workflow with MLIPs"
 authors = [{ name = "Abhijeet Gangan", email = "abhijeetgangan@g.ucla.edu" }]
 readme = "README.md"
