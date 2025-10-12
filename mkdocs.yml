@@ -108,4 +108,5 @@ nav:
   - Examples:
     - Overview: examples/index.md
     - Si64: examples/Si64.ipynb
+    - hull: examples/hull.ipynb
   - Development: development/contributing.md
