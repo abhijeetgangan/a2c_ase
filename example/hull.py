@@ -4,7 +4,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "a2c-ase @ git+https://github.com/abhijeetgangan/a2c_ase.git",
+#     "a2c-ase @ git+https://github.com/abhijeetgangan/a2c_ase.git@feature/example_cell_extraction",
 #     "numpy",
 #     "pymatgen",
 #     "tqdm",
