@@ -36,7 +36,7 @@ jobs:
       run: uv run ty check
 
     - name: Test with pytest
-      run: uv run pytest --cov=a2c_ase --cov-report=xml --cov-fail-under=60 tests/
+      run: uv run pytest --cov=a2c_ase --cov-report=xml --cov-fail-under=80 tests/
 
     - name: Run example Silicon
       run: uv run example/Si64.py

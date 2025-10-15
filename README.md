@@ -88,7 +88,7 @@ pytest             # test
 
 ## Citation
 
-If you use this software in your research, please cite it: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17355689.svg)](https://doi.org/10.5281/zenodo.17355689)
+If you use this software in your research, please cite it: [DOI:https://doi.org/10.5281/zenodo.17355689](https://doi.org/10.5281/zenodo.17355689)
 
 ## References
 

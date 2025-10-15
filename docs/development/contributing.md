@@ -109,7 +109,7 @@ Create PR on GitHub with clear description.
 ### PR Checklist
 
 - [ ] Tests pass
-- [ ] Coverage >= 60%
+- [ ] Coverage >= 80%
 - [ ] Type hints
 - [ ] Docstrings
 

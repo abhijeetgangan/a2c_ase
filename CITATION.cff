@@ -5,7 +5,7 @@ authors:
   - family-names: "Gangan"
     given-names: "Abhijeet"
     email: "abhijeetgangan@g.ucla.edu"
-version: 0.0.4
+version: 0.0.3
 doi: 10.5281/zenodo.17355689
 date-released: 2025-10-14
 url: "https://github.com/abhijeetgangan/a2c_ase"

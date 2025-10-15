@@ -9,6 +9,6 @@
 ## Checklist
 
 - [ ] Tests pass
-- [ ] Coverage >= 60%
+- [ ] Coverage >= 80%
 - [ ] Type hints
 - [ ] Docstrings

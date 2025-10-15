@@ -205,9 +205,8 @@ def relax_unit_cell(
     # Set up trajectory file if requested
     if trajectory_file is not None:
         traj = Trajectory(trajectory_file, "w", atoms)
-        trajectory_callback = traj.write
     else:
-        trajectory_callback = None
+        traj = None
 
     # Create logger dictionary
     logger = {"energy": [], "forces": [], "stress": [], "volume": [], "pressure": []}
@@ -216,8 +215,7 @@ def relax_unit_cell(
     cell_filter = FrechetCellFilter(atoms)
 
     # Create optimizer
-
-    optimizer = FIRE(cell_filter, logfile=None, trajectory=trajectory_callback)
+    optimizer = FIRE(cell_filter, logfile=None, trajectory=traj)
 
     if verbose:
         # Get initial values
