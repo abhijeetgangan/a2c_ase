@@ -53,8 +53,13 @@ from a2c_ase.utils import extract_crystallizable_subcells
 IS_CI = os.getenv("CI") is not None
 
 # Get the path to the data file relative to this script
-script_dir = Path(__file__).parent
-data_file = script_dir.parent / "data" / "Na_2000.xyz"
+try:
+    script_dir = Path(__file__).parent
+    data_file = script_dir.parent / "data" / "Na_2000.xyz"
+except NameError:
+    # Running interactively - use current working directory
+    script_dir = Path.cwd()
+    data_file = Path("data/Na_2000.xyz")
 
 # Relaxation parameters
 max_iter = 20 if IS_CI else 200  # Maximum optimization steps
