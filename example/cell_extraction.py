@@ -4,7 +4,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "a2c-ase>=0.0.3",
+#     "a2c-ase>=0.0.4",
 #     "numpy",
 #     "pymatgen",
 #     "tqdm",
