@@ -107,6 +107,7 @@ nav:
     - Potentials: api/potentials.md
   - Examples:
     - Overview: examples/index.md
-    - Si64: examples/Si64.ipynb
-    - hull: examples/hull.ipynb
+    - Silicon: examples/Si64.ipynb
+    - Hull: examples/hull.ipynb
+    - Cell Extraction: examples/cell_extraction.ipynb
   - Development: development/contributing.md

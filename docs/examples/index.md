@@ -26,6 +26,17 @@ Hull exploration with a2c workflow for the classic Kob-Andersen binary Lennard-J
 
 ---
 
+## 3. Cell Extraction - Sodium Crystallization Analysis
+
+Extract and analyze crystallizable subcells from a pre-generated amorphous sodium structure using ML potential.
+
+[Tutorial Docs](cell_extraction.ipynb){ .md-button }
+[Source Code](https://github.com/abhijeetgangan/a2c_ase/blob/main/example/cell_extraction.py){ .md-button }
+
+**Demonstrates**: Loading existing structures, subcell extraction, ML potential, space group distribution analysis, visualization.
+
+---
+
 ## See Also
 
 - **Understand the workflow**: [User Guide](../user-guide/workflow.md)

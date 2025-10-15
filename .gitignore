@@ -177,3 +177,4 @@ htmlcov/
 # Generated notebooks during docs build
 docs/examples/Si64.ipynb
 docs/examples/hull.ipynb
+docs/examples/cell_extraction.ipynb
