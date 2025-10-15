@@ -1,3 +1,7 @@
+## v0.0.5
+
+- Bump test coverage
+
 ## v0.0.4
 
 - Add Zenodo DOI
