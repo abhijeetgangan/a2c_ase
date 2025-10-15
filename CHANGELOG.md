@@ -1,7 +1,10 @@
+## v0.0.4
+
+- Add Zenodo DOI
+
 ## v0.0.3
 
 - Add example for cell extraction
-- Zenodo DOI
 
 ## v0.0.2
 
