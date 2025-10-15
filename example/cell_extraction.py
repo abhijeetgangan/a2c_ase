@@ -99,7 +99,7 @@ print(f"Found {len(crystallizable_cells)} crystallizable cells")
 
 # %%
 device = "cpu" if IS_CI else "cuda"
-calculator = mace_mp(model="medium", device=device, dtype="float32")
+calculator = mace_mp(model="small-omat-0", device=device, dtype="float32")
 print(f"MACE calculator initialized on {device}")
 
 # %% [markdown]
