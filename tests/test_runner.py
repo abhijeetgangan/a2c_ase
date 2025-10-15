@@ -134,3 +134,61 @@ def test_relax_unit_cell_convergence():
 
     # Forces should be significantly reduced
     assert final_fmax <= initial_fmax + 0.05
+
+
+def test_melt_quench_md_verbose():
+    """Test melt-quench MD with verbose output."""
+    atoms = bulk("Ar", "fcc", a=5.3, cubic=True) * (2, 2, 2)
+    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+
+    # Run with verbose=True and small log_interval to trigger prints
+    result_atoms, log_data = melt_quench_md(
+        atoms,
+        calc,
+        equi_steps=5,
+        cool_steps=5,
+        final_steps=5,
+        T_high=500.0,
+        T_low=100.0,
+        verbose=True,
+        log_interval=1,  # Log every step
+    )
+
+    assert isinstance(result_atoms, Atoms)
+    assert isinstance(log_data, dict)
+
+
+def test_relax_unit_cell_verbose():
+    """Test unit cell relaxation with verbose output."""
+    atoms = bulk("Ar", "fcc", a=5.0)
+    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+
+    # Run with verbose=True
+    result_atoms, log_dict = relax_unit_cell(atoms, calc, max_iter=5, fmax=0.1, verbose=True)
+
+    # Check logger contains data
+    assert "energy" in log_dict
+    assert "forces" in log_dict
+    assert "stress" in log_dict
+    assert "volume" in log_dict
+    assert "pressure" in log_dict
+
+    # Check that logger has entries (since verbose=True)
+    assert len(log_dict["energy"]) > 0
+
+
+def test_relax_unit_cell_with_trajectory():
+    """Test unit cell relaxation with trajectory file."""
+    atoms = bulk("Ar", "fcc", a=5.0)
+    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+
+    with tempfile.NamedTemporaryFile(suffix=".traj", delete=False) as f:
+        traj_file = f.name
+
+    # Run with trajectory
+    result_atoms, log_dict = relax_unit_cell(
+        atoms, calc, max_iter=3, fmax=0.1, trajectory_file=traj_file, verbose=True
+    )
+
+    assert isinstance(result_atoms, Atoms)
+    assert isinstance(log_dict, dict)
