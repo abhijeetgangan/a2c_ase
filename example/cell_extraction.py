@@ -60,16 +60,17 @@ IS_CI = os.getenv("CI") is not None
 # Get the path to the data file relative to this script
 try:
     script_dir = Path(__file__).parent
-    data_file = script_dir.parent / "data" / "Na_2000.xyz"
 except NameError:
     script_dir = Path.cwd()
-    if (Path.cwd() / "data" / "Na_2000.xyz").exists():
-        data_file = Path.cwd() / "data" / "Na_2000.xyz"
-    elif (Path.cwd() / ".." / "data" / "Na_2000.xyz").exists():
-        data_file = Path.cwd() / ".." / "data" / "Na_2000.xyz"
-    else:
-        msg = "Could not find data/Na_2000.xyz. Please run from the project root directory."
-        raise FileNotFoundError(msg) from None
+
+# Search for data file in multiple locations
+for parent in [script_dir.parent, script_dir, script_dir.parent.parent]:
+    data_file = parent / "data" / "Na_2000.xyz"
+    if data_file.exists():
+        break
+else:
+    msg = f"Could not find data/Na_2000.xyz. Run from project root. CWD: {Path.cwd()}"
+    raise FileNotFoundError(msg) from None
 
 # Relaxation parameters
 max_iter = 20 if IS_CI else 200  # Maximum optimization steps
