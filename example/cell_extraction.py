@@ -33,6 +33,7 @@ import os
 from collections import Counter
 from pathlib import Path
 
+import matplotlib
 import matplotlib.pyplot as plt
 from ase.io import read
 from mace.calculators.foundations_models import mace_mp  # type: ignore
@@ -42,6 +43,10 @@ from tqdm import tqdm
 
 from a2c_ase.runner import relax_unit_cell
 from a2c_ase.utils import extract_crystallizable_subcells
+
+# Set matplotlib backend for CI
+if os.getenv("CI") is not None:
+    matplotlib.use("Agg")
 
 # %% [markdown]
 # ## Configuration
@@ -57,9 +62,14 @@ try:
     script_dir = Path(__file__).parent
     data_file = script_dir.parent / "data" / "Na_2000.xyz"
 except NameError:
-    # Running interactively - use current working directory
     script_dir = Path.cwd()
-    data_file = Path("data/Na_2000.xyz")
+    if (Path.cwd() / "data" / "Na_2000.xyz").exists():
+        data_file = Path.cwd() / "data" / "Na_2000.xyz"
+    elif (Path.cwd() / ".." / "data" / "Na_2000.xyz").exists():
+        data_file = Path.cwd() / ".." / "data" / "Na_2000.xyz"
+    else:
+        msg = "Could not find data/Na_2000.xyz. Please run from the project root directory."
+        raise FileNotFoundError(msg) from None
 
 # Relaxation parameters
 max_iter = 20 if IS_CI else 200  # Maximum optimization steps
@@ -164,9 +174,15 @@ ax.set_title("Space Group Distribution of Relaxed Structures")
 ax.grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
-output_file = script_dir / "space_group_distribution.png"
-plt.savefig(output_file, dpi=300, bbox_inches="tight")
-plt.show()
+
+# Save plot (skip display in CI)
+if not IS_CI:
+    output_file = script_dir / "space_group_distribution.png"
+    plt.savefig(output_file, dpi=300, bbox_inches="tight")
+    print(f"\nPlot saved to {output_file}")
+    plt.show()
+else:
+    plt.close()  # Clean up in CI
 
 # %% [markdown]
 # ## Results Summary
