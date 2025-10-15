@@ -4,8 +4,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "a2c_ase @ git+https://github.com/abhijeetgangan/a2c_ase.git",
-#     "ase",
+#     "a2c-ase @ git+https://github.com/abhijeetgangan/a2c_ase.git@feature/example_cell_extraction",
 #     "numpy",
 #     "pymatgen",
 #     "tqdm",
@@ -25,7 +24,8 @@
 # ## Setup and Imports
 #
 # The Kob-Andersen model is a classic binary Lennard-Jones system that forms metallic glasses.
-# We use reduced units: distances in sigma, energies in epsilon.
+# We use reduced units: distances in sigma, energies in epsilon. We will demonstrate how we can
+# explore the hull for a selected compositions.
 
 # %%
 import os
@@ -58,7 +58,7 @@ IS_CI = os.getenv("CI") is not None
 comp = Composition("Ni80P20")
 
 # Cell in LJ units (sigma as length unit)
-cell_size = 15.0
+cell_size = 4.4
 cell = np.array([[cell_size, 0.0, 0.0], [0.0, cell_size, 0.0], [0.0, 0.0, cell_size]])
 
 # Kob-Andersen calculator (reduced/LJ units)
@@ -84,7 +84,7 @@ global_seed = 42
 fmax = 0.01  # Force convergence in reduced units
 
 # Reduce parameters for CI testing
-max_iter = 20 if IS_CI else 100
+max_iter = 20 if IS_CI else 200
 
 # MD parameters (LJ units)
 md_log_interval = 50
@@ -93,7 +93,7 @@ md_cool_steps = 100 if IS_CI else 2500
 md_final_steps = 100 if IS_CI else 2500
 md_T_high = 4.0  # High T* (reduced units, above glass transition ~0.8)
 md_T_low = 0.4  # Low T* (reduced units, below glass transition)
-md_time_step = 0.001  # Timestep in reduced units
+md_time_step = 0.005  # Timestep in reduced units
 md_friction = 1 / (100 * md_time_step)  # Friction coefficient
 
 if IS_CI:
@@ -109,7 +109,7 @@ packed_atoms, log_data = random_packed_structure(
     composition=comp,
     cell=cell,
     seed=global_seed,
-    diameter=1.0,  # In units of sigma
+    diameter=2.5,
     max_iter=max_iter,
     fmax=fmax,
     verbose=True,
@@ -118,6 +118,13 @@ packed_atoms, log_data = random_packed_structure(
 print(f"Generated packed structure: {packed_atoms}")
 print(f"Number of Ni (A) atoms: {sum(1 for s in packed_atoms.symbols if s == 'Ni')}")
 print(f"Number of P (B) atoms: {sum(1 for s in packed_atoms.symbols if s == 'P')}")
+
+# %%
+# Relax the packed structure so that the initial structure doesn't have
+# large forces for melt-quench MD.
+packed_atoms, logger = relax_unit_cell(
+    atoms=packed_atoms, calculator=calculator, max_iter=max_iter, fmax=fmax, verbose=True
+)
 
 # %% [markdown]
 # ## Step 2: Melt-Quench MD Simulation
@@ -145,15 +152,28 @@ print(f"Amorphous structure ready: {amorphous_atoms}")
 # ## Step 3: Extract Crystallizable Subcells
 #
 # Divide the glass into overlapping subcells to search for local crystalline order.
+# In this example, we will only consider the following compositions:
+# Ni, NiP, Ni2P, Ni4P, NiP2, NiP4, P.
 
 # %%
 crystallizable_cells = extract_crystallizable_subcells(
     atoms=amorphous_atoms,
     d_frac=0.25,  # Grid spacing (larger for binary system)
     n_min=2,
-    n_max=16,  # Allow larger subcells for binary compounds
+    n_max=8,  # Allow larger subcells for binary compounds
     cubic_only=False,  # Allow non-cubic structures
     allowed_atom_counts=None,  # Don't restrict by count
+    restrict_to_compositions=[
+        "Ni",
+        "NiP",
+        "Ni2P",
+        "Ni4P",
+        "NiP2",
+        "NiP4",
+        "P",
+    ],  # Only consider these compositions
+    max_coeff=None,
+    elements=None,
 )
 print(f"Extracted {len(crystallizable_cells)} candidate subcells")
 

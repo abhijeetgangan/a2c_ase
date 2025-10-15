@@ -109,10 +109,9 @@ Create PR on GitHub with clear description.
 ### PR Checklist
 
 - [ ] Tests pass
-- [ ] Code formatted (`ruff format`)
-- [ ] Type hints added
-- [ ] Docstrings updated
-- [ ] Pre-commit hooks pass
+- [ ] Coverage >= 60%
+- [ ] Type hints
+- [ ] Docstrings
 
 ---
 

@@ -4,8 +4,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "a2c_ase @ git+https://github.com/abhijeetgangan/a2c_ase.git",
-#     "ase",
+#     "a2c-ase @ git+https://github.com/abhijeetgangan/a2c_ase.git@feature/example_cell_extraction",
 #     "numpy",
 #     "pymatgen",
 #     "tqdm",
@@ -78,11 +77,8 @@ if IS_CI:
 # MACE is a state-of-the-art machine learning potential trained on diverse materials data.
 
 # %%
-mace_checkpoint_url = (
-    "https://github.com/ACEsuit/mace-mp/releases/download/mace_omat_0/mace-omat-0-medium.model"
-)
 device = "cpu" if IS_CI else "cuda"
-calculator = mace_mp(model=mace_checkpoint_url, device=device, dtype="float32", enable_cueq=False)
+calculator = mace_mp(model="small-omat-0", device=device, dtype="float32")
 
 # %% [markdown]
 # ## Step 2: Generate Random Packed Structure

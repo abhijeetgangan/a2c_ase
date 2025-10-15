@@ -9,8 +9,6 @@
 ## Checklist
 
 - [ ] Tests pass
-- [ ] Code formatted (`ruff format`)
 - [ ] Coverage >= 60%
-- [ ] Type hints added
-- [ ] Docstrings updated
-- [ ] Pre-commit hooks pass
+- [ ] Type hints
+- [ ] Docstrings

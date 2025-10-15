@@ -581,6 +581,9 @@ def extract_crystallizable_subcells(
     cubic_only: bool = True,
     allowed_atom_counts: Optional[list[int]] = None,
     filter_function: Optional[Callable] = None,
+    restrict_to_compositions: Optional[Sequence[str]] = None,
+    max_coeff: Optional[int] = None,
+    elements: Optional[Sequence[str]] = None,
 ) -> list[Atoms]:
     """Extract and filter subcells from an amorphous structure for crystallization analysis.
 
@@ -604,7 +607,14 @@ def extract_crystallizable_subcells(
     filter_function : callable, optional
         Custom filter function that takes a subcell tuple (indices, lower_bound, upper_bound)
         and returns a boolean. If provided, used instead of default filter, by default None
-
+    restrict_to_compositions : Sequence[str], optional
+        Chemical formulas to filter subcells by (e.g. ["AB", "AB2"]). Only matching compositions are
+        returned.
+    max_coeff : int, optional
+        Maximum stoichiometric coefficient for auto-generating restrictions. E.g. max_coeff=2
+        allows AB2 but not AB3.
+    elements : Sequence[str], optional
+        Elements for generating stoichiometries. Required if max_coeff provided.
     Returns
     -------
     list[Atoms]
@@ -622,6 +632,9 @@ def extract_crystallizable_subcells(
         d_frac=d_frac,
         n_min=n_min,
         n_max=n_max,
+        restrict_to_compositions=restrict_to_compositions,
+        max_coeff=max_coeff,
+        elements=elements,
     )
     print(f"Created {len(subcells)} subcells from amorphous structure")
 

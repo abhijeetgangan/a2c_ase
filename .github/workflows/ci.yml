@@ -38,11 +38,14 @@ jobs:
     - name: Test with pytest
       run: uv run pytest --cov=a2c_ase --cov-report=xml --cov-fail-under=60 tests/
 
-    - name: Run example Si64
+    - name: Run example Silicon
       run: uv run example/Si64.py
 
-    - name: Run example hull
+    - name: Run example Hull
       run: uv run example/hull.py
+
+    - name: Run example Cell Extraction
+      run: uv run example/cell_extraction.py
 
     - name: Upload results to Codecov
       uses: codecov/codecov-action@v5
