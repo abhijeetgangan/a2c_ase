@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "a2c_ase"
+authors:
+  - family-names: "Gangan"
+    given-names: "Abhijeet"
+    email: "abhijeetgangan@g.ucla.edu"
+version: 0.0.3
+doi: 10.5281/zenodo.17355689
+date-released: 2025-10-14
+url: "https://github.com/abhijeetgangan/a2c_ase"
+repository-code: "https://github.com/abhijeetgangan/a2c_ase"
+license: MIT

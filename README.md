@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/abhijeetgangan/a2c_ase/branch/main/graph/badge.svg)](https://codecov.io/gh/abhijeetgangan/a2c_ase)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![DOI](https://zenodo.org/badge/940895212.svg)](https://doi.org/10.5281/zenodo.17355689)
+
 
 An ASE-friendly implementation of the amorphous-to-crystalline (a2c) workflow.
 
@@ -83,6 +85,10 @@ ruff format        # format
 ty check           # type check
 pytest             # test
 ```
+
+## Citation
+
+If you use this software in your research, please cite it: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17355689.svg)](https://doi.org/10.5281/zenodo.17355689)
 
 ## References
 
