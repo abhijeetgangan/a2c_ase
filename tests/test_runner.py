@@ -6,7 +6,7 @@ import numpy as np
 from ase import Atoms
 from ase.build import bulk
 
-from a2c_ase.potentials.mlj import MultiLennardJones
+from a2c_ase.potentials.lj_ms import LennardJonesMultiSpecies
 from a2c_ase.runner import melt_quench_md, relax_unit_cell
 
 # Realistic Lennard-Jones parameters for Argon
@@ -19,7 +19,7 @@ def test_melt_quench_md_basic():
     """Test basic melt-quench MD functionality with realistic Ar LJ potential."""
     # Create a 2x2x2 Ar FCC supercell (32 atoms)
     atoms = bulk("Ar", "fcc", a=5.3, cubic=True) * (2, 2, 2)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Run very short simulation
     result_atoms, log_data = melt_quench_md(
@@ -56,7 +56,7 @@ def test_melt_quench_md_with_trajectory():
     """Test melt-quench MD with trajectory file using Ar LJ potential."""
     # Create a 2x2x2 Ar FCC supercell (32 atoms)
     atoms = bulk("Ar", "fcc", a=5.3, cubic=True) * (2, 2, 2)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     with tempfile.NamedTemporaryFile(suffix=".traj", delete=False) as f:
         traj_file = f.name
@@ -80,7 +80,7 @@ def test_relax_unit_cell_basic():
     """Test basic unit cell relaxation with Ar LJ potential."""
     # Create Ar FCC structure slightly off equilibrium
     atoms = bulk("Ar", "fcc", a=5.0)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Run very short relaxation
     result_atoms, log_dict = relax_unit_cell(atoms, calc, max_iter=5, fmax=0.1, verbose=False)
@@ -100,7 +100,7 @@ def test_relax_unit_cell_energy_decrease():
     """Test that relaxation decreases energy with Ar LJ potential."""
     # Start with compressed lattice (equilibrium is ~5.3 Å)
     atoms = bulk("Ar", "fcc", a=4.8)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Get initial energy
     atoms.calc = calc
@@ -120,7 +120,7 @@ def test_relax_unit_cell_convergence():
     """Test that relaxation reduces forces with Ar LJ potential."""
     # Start with highly compressed lattice
     atoms = bulk("Ar", "fcc", a=4.5)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Get initial forces
     atoms.calc = calc
@@ -139,7 +139,7 @@ def test_relax_unit_cell_convergence():
 def test_melt_quench_md_verbose():
     """Test melt-quench MD with verbose output."""
     atoms = bulk("Ar", "fcc", a=5.3, cubic=True) * (2, 2, 2)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Run with verbose=True and small log_interval to trigger prints
     result_atoms, log_data = melt_quench_md(
@@ -161,7 +161,7 @@ def test_melt_quench_md_verbose():
 def test_relax_unit_cell_verbose():
     """Test unit cell relaxation with verbose output."""
     atoms = bulk("Ar", "fcc", a=5.0)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     # Run with verbose=True
     result_atoms, log_dict = relax_unit_cell(atoms, calc, max_iter=5, fmax=0.1, verbose=True)
@@ -180,7 +180,7 @@ def test_relax_unit_cell_verbose():
 def test_relax_unit_cell_with_trajectory():
     """Test unit cell relaxation with trajectory file."""
     atoms = bulk("Ar", "fcc", a=5.0)
-    calc = MultiLennardJones(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
+    calc = LennardJonesMultiSpecies(sigma=AR_SIGMA, epsilon=AR_EPSILON, rc=AR_RC)
 
     with tempfile.NamedTemporaryFile(suffix=".traj", delete=False) as f:
         traj_file = f.name

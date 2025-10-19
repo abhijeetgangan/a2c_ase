@@ -5,7 +5,7 @@
 - Python 3.10 or higher
 - pip or uv package manager
 
-## From PyPI (Recommended)
+## From PyPI
 
 Install the latest stable release from PyPI:
 

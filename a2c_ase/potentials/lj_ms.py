@@ -4,8 +4,8 @@ from ase.neighborlist import NeighborList
 from ase.stress import full_3x3_to_voigt_6_stress
 
 
-class MultiLennardJones(Calculator):
-    """Multi-species Lennard-Jones potential calculator.
+class LennardJonesMultiSpecies(Calculator):
+    """Lennard-Jones potential calculator for multi-species systems.
 
     Implements the classic 12-6 Lennard-Jones potential with support for multiple
     chemical species, mixing rules, and custom cross-interactions.

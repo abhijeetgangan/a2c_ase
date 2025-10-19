@@ -73,8 +73,8 @@ else:
     raise FileNotFoundError(msg) from None
 
 # Relaxation parameters
-max_iter = 20 if IS_CI else 200  # Maximum optimization steps
-fmax = 0.01 if IS_CI else 0.05  # Force convergence criterion in eV/Å
+MAX_ITER = 20 if IS_CI else 200  # Maximum optimization steps
+FMAX = 0.01 if IS_CI else 0.05  # Force convergence criterion in eV/Å
 
 if IS_CI:
     print("Running in CI mode with reduced parameters for fast testing")
@@ -114,9 +114,9 @@ print(f"Found {len(crystallizable_cells)} crystallizable cells")
 # ## Step 3: Initialize MACE Calculator
 
 # %%
-device = "cpu" if IS_CI else "cuda"
-calculator = mace_mp(model="small-omat-0", device=device, dtype="float32")
-print(f"MACE calculator initialized on {device}")
+DEVICE = "cpu" if IS_CI else "cuda"
+CALCULATOR = mace_mp(model="small-omat-0", device=DEVICE, dtype="float32")
+print(f"MACE calculator initialized on {DEVICE}")
 
 # %% [markdown]
 # ## Step 4: Relax Candidate Structures
@@ -133,9 +133,9 @@ print("Relaxing structures...")
 for atoms in tqdm(crystallizable_cells[:20] if IS_CI else crystallizable_cells):
     relaxed_cell, log_dict = relax_unit_cell(
         atoms=atoms,
-        calculator=calculator,
-        max_iter=max_iter,
-        fmax=fmax,
+        calculator=CALCULATOR,
+        max_iter=MAX_ITER,
+        fmax=FMAX,
         verbose=False,
     )
 

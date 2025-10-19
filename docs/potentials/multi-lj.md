@@ -1,6 +1,6 @@
-# Multi-Lennard-Jones Potential
+# Lennard-Jones-Multi-Species Potential
 
-The Multi-Lennard-Jones calculator implements the classic Lennard-Jones potential with support for multiple chemical species and custom mixing rules.
+The Lennard-Jones-Multi-Species calculator implements the classic Lennard-Jones potential with support for multiple chemical species and custom mixing rules.
 
 ## Theory
 
@@ -29,14 +29,14 @@ Where:
 ### Single Species
 
 ```python
-from a2c_ase.potentials.mlj import MultiLennardJones
+from a2c_ase.potentials.lj_ms import LennardJonesMultiSpecies
 from ase import Atoms
 
 # Create atoms
 atoms = Atoms('Ar10', positions=..., cell=..., pbc=True)
 
 # Create calculator
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon=1.0,    # eV
     sigma=3.4,      # Å
     rc=10.0        # Cutoff (Å)
@@ -50,7 +50,7 @@ energy = atoms.get_potential_energy()
 
 ```python
 # Dictionary specification
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon={"Fe": 0.5, "B": 0.3},
     sigma={"Fe": 2.5, "B": 1.8},
     rc=10.0
@@ -82,7 +82,7 @@ calculator = MultiLennardJones(
 \]
 
 ```python
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon={"A": 1.0, "B": 1.5},
     sigma={"A": 1.0, "B": 0.8},
     mixing_rule="lorentz_berthelot"
@@ -100,7 +100,7 @@ calculator = MultiLennardJones(
 \]
 
 ```python
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon={"A": 1.0, "B": 1.5},
     sigma={"A": 1.0, "B": 0.8},
     mixing_rule="geometric"
@@ -112,7 +112,7 @@ calculator = MultiLennardJones(
 Override mixing rules for specific pairs:
 
 ```python
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon={"A": 1.0, "B": 1.5},
     sigma={"A": 1.0, "B": 0.88},
     mixing_rule="lorentz_berthelot",
@@ -133,7 +133,7 @@ u_{\text{shifted}}(r) = u(r) - u(r_c)
 \]
 
 ```python
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon=1.0,
     sigma=3.4,
     rc=10.0,
@@ -160,7 +160,7 @@ S(r) = \begin{cases}
 \]
 
 ```python
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     epsilon=1.0,
     sigma=3.4,
     rc=10.0,
@@ -175,10 +175,10 @@ calculator = MultiLennardJones(
 
 ```python
 from ase.lattice.cubic import FaceCubicFactory
-from a2c_ase.potentials.mlj import MultiLennardJones
+from a2c_ase.potentials.lj_ms import LennardJonesMultiSpecies
 
 # Argon parameters (from literature)
-calc = MultiLennardJones(
+calc = LennardJonesMultiSpecies(
     epsilon=0.0103,  # eV (0.0103 eV ≈ 120 K)
     sigma=3.405,     # Å
     rc=10.0
@@ -197,7 +197,7 @@ print(f"Energy per atom: {energy/len(atoms):.4f} eV")
 Classic binary LJ mixture:
 
 ```python
-calc = MultiLennardJones(
+calc = LennardJonesMultiSpecies(
     epsilon={"A": 1.0, "B": 0.5},
     sigma={"A": 1.0, "B": 0.88},
     mixing_rule="lorentz_berthelot",

@@ -5,7 +5,7 @@ Get started with `a2c_ase` in minutes.
 ## Prerequisites
 
 - `a2c_ase` installed ([Installation Guide](installation.md))
-- A calculator installed (MACE)
+- A calculator installed (e.g., MACE)
 
 === "pip"
     ```bash
