@@ -55,14 +55,14 @@ IS_CI = os.getenv("CI") is not None
 
 # %%
 # System configuration (80:20 A:B composition)
-comp = Composition("Ni80P20")
+COMP = Composition("Ni80P20")
 
 # Cell in LJ units (sigma as length unit)
-cell_size = 4.4
-cell = np.array([[cell_size, 0.0, 0.0], [0.0, cell_size, 0.0], [0.0, 0.0, cell_size]])
+CELL_SIZE = 4.4
+CELL = np.array([[CELL_SIZE, 0.0, 0.0], [0.0, CELL_SIZE, 0.0], [0.0, 0.0, CELL_SIZE]])
 
 # Kob-Andersen calculator (reduced/LJ units)
-calculator = LennardJonesMultiSpecies(
+CALCULATOR = LennardJonesMultiSpecies(
     sigma={"Ni": 1.0, "P": 0.88},  # LJ sigma in natural units
     epsilon={"Ni": 1.0, "P": 0.5},  # LJ epsilon in natural units
     cross_interactions={("Ni", "P"): {"sigma": 0.8, "epsilon": 1.5}},
@@ -80,21 +80,21 @@ calculator = LennardJonesMultiSpecies(
 # - Time: τ = √(mσ²/ε) (dimensionless)
 
 # %%
-global_seed = 42
-fmax = 0.01  # Force convergence in reduced units
+GLOBAL_SEED = 42
+FMAX = 0.01  # Force convergence in reduced units
 
 # Reduce parameters for CI testing
-max_iter = 20 if IS_CI else 200
+MAX_ITER = 20 if IS_CI else 200
 
 # MD parameters (LJ units)
-md_log_interval = 50
-md_equi_steps = 100 if IS_CI else 2500
-md_cool_steps = 100 if IS_CI else 2500
-md_final_steps = 100 if IS_CI else 2500
-md_T_high = 4.0  # High T* (reduced units, above glass transition ~0.8)
-md_T_low = 0.4  # Low T* (reduced units, below glass transition)
-md_time_step = 0.005  # Timestep in reduced units
-md_friction = 1 / (100 * md_time_step)  # Friction coefficient
+MD_LOG_INTERVAL = 50
+MD_EQUILIBRIUM_STEPS = 100 if IS_CI else 2500
+MD_COOL_STEPS = 100 if IS_CI else 2500
+MD_FINAL_STEPS = 100 if IS_CI else 2500
+MD_T_HIGH = 4.0  # High T* (reduced units, above glass transition ~0.8)
+MD_T_LOW = 0.4  # Low T* (reduced units, below glass transition)
+MD_TIME_STEP = 0.005  # Timestep in reduced units
+MD_FRICTION = 1 / (100 * MD_TIME_STEP)  # Friction coefficient
 
 if IS_CI:
     print("Running in CI mode with reduced parameters")
@@ -106,12 +106,12 @@ if IS_CI:
 
 # %%
 packed_atoms, log_data = random_packed_structure(
-    composition=comp,
-    cell=cell,
-    seed=global_seed,
+    composition=COMP,
+    cell=CELL,
+    seed=GLOBAL_SEED,
     diameter=2.5,
-    max_iter=max_iter,
-    fmax=fmax,
+    max_iter=MAX_ITER,
+    fmax=FMAX,
     verbose=True,
     auto_diameter=False,
 )
@@ -123,7 +123,7 @@ print(f"Number of P (B) atoms: {sum(1 for s in packed_atoms.symbols if s == 'P')
 # Relax the packed structure so that the initial structure doesn't have
 # large forces for melt-quench MD.
 packed_atoms, logger = relax_unit_cell(
-    atoms=packed_atoms, calculator=calculator, max_iter=max_iter, fmax=fmax, verbose=True
+    atoms=packed_atoms, calculator=CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=True
 )
 
 # %% [markdown]
@@ -134,17 +134,17 @@ packed_atoms, logger = relax_unit_cell(
 # %%
 amorphous_atoms, md_log = melt_quench_md(
     atoms=packed_atoms,
-    calculator=calculator,
-    equi_steps=md_equi_steps,
-    cool_steps=md_cool_steps,
-    final_steps=md_final_steps,
-    T_high=md_T_high,
-    T_low=md_T_low,
-    time_step=md_time_step,
-    friction=md_friction,
-    seed=global_seed,
+    calculator=CALCULATOR,
+    equi_steps=MD_EQUILIBRIUM_STEPS,
+    cool_steps=MD_COOL_STEPS,
+    final_steps=MD_FINAL_STEPS,
+    T_high=MD_T_HIGH,
+    T_low=MD_T_LOW,
+    time_step=MD_TIME_STEP,
+    friction=MD_FRICTION,
+    seed=GLOBAL_SEED,
     verbose=True,
-    log_interval=md_log_interval,
+    log_interval=MD_LOG_INTERVAL,
 )
 print(f"Amorphous structure ready: {amorphous_atoms}")
 
@@ -189,7 +189,7 @@ print("Optimizing candidate structures...")
 for atoms in tqdm(crystallizable_cells[:20] if IS_CI else crystallizable_cells):
     try:
         relaxed, logger = relax_unit_cell(
-            atoms=atoms, calculator=calculator, max_iter=max_iter, fmax=fmax, verbose=False
+            atoms=atoms, calculator=CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=False
         )
 
         final_energy = relaxed.get_potential_energy()
@@ -221,13 +221,13 @@ print("\nComputing reference energies...")
 
 # Pure Ni: FCC structure
 ni_fcc = bulk("Ni", "fcc", a=1.5)
-ni_relaxed, _ = relax_unit_cell(ni_fcc, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+ni_relaxed, _ = relax_unit_cell(ni_fcc, CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=False)
 e_ni_total = ni_relaxed.get_potential_energy()
 print(f"Ni (FCC): {e_ni_total / len(ni_relaxed):.4f} ε/atom")
 
 # Pure P: FCC structure
 p_fcc = bulk("P", "fcc", a=1.3)
-p_relaxed, _ = relax_unit_cell(p_fcc, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+p_relaxed, _ = relax_unit_cell(p_fcc, CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=False)
 e_p_total = p_relaxed.get_potential_energy()
 print(f"P (FCC): {e_p_total / len(p_relaxed):.4f} ε/atom")
 
@@ -245,7 +245,7 @@ ni4p = Atoms(
     cell=[alat, alat, alat],
     pbc=True,
 )
-ni4p_relaxed, _ = relax_unit_cell(ni4p, calculator, max_iter=max_iter, fmax=fmax, verbose=False)
+ni4p_relaxed, _ = relax_unit_cell(ni4p, CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=False)
 e_ni4p_total = ni4p_relaxed.get_potential_energy()
 print(f"Ni4P (Rocksalt): {e_ni4p_total / len(ni4p_relaxed):.4f} ε/atom")
 

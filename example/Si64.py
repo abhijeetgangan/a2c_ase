@@ -50,23 +50,23 @@ from a2c_ase.utils import extract_crystallizable_subcells, random_packed_structu
 # %%
 IS_CI = os.getenv("CI") is not None
 
-comp = Composition("Si64")
-cell = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
+COMP = Composition("Si64")
+CELL = np.array([[11.1, 0.0, 0.0], [0.0, 11.1, 0.0], [0.0, 0.0, 11.1]])
 
 # Optimization parameters
-global_seed = 42
-fmax = 0.01  # Force convergence criterion in eV/Å
-max_iter = 2 if IS_CI else 100
+GLOBAL_SEED = 42
+FMAX = 0.01  # Force convergence criterion in eV/Å
+MAX_ITER = 2 if IS_CI else 100
 
 # Molecular dynamics parameters
-md_log_interval = 50
-md_equi_steps = 10 if IS_CI else 2500  # High temperature equilibration steps
-md_cool_steps = 10 if IS_CI else 2500  # Cooling steps
-md_final_steps = 10 if IS_CI else 2500  # Low temperature equilibration steps
-md_T_high = 2000.0  # Initial melting temperature (K)
-md_T_low = 300.0  # Final temperature (K)
-md_time_step = 2.0  # fs
-md_friction = 0.01  # Langevin friction
+MD_LOG_INTERVAL = 50
+MD_EQUILIBRIUM_STEPS = 10 if IS_CI else 2500  # High temperature equilibration steps
+MD_COOL_STEPS = 10 if IS_CI else 2500  # Cooling steps
+MD_FINAL_STEPS = 10 if IS_CI else 2500  # Low temperature equilibration steps
+MD_T_HIGH = 2000.0  # Initial melting temperature (K)
+MD_T_LOW = 300.0  # Final temperature (K)
+MD_TIME_STEP = 2.0  # fs
+MD_FRICTION = 0.01  # Langevin friction
 
 if IS_CI:
     print("Running in CI mode with reduced parameters for fast testing")
@@ -77,8 +77,8 @@ if IS_CI:
 # MACE is a state-of-the-art machine learning potential trained on diverse materials data.
 
 # %%
-device = "cpu" if IS_CI else "cuda"
-calculator = mace_mp(model="small-omat-0", device=device, dtype="float32")
+DEVICE = "cpu" if IS_CI else "cuda"
+CALCULATOR = mace_mp(model="small-omat-0", device=DEVICE, dtype="float32")
 
 # %% [markdown]
 # ## Step 2: Generate Random Packed Structure
@@ -87,11 +87,11 @@ calculator = mace_mp(model="small-omat-0", device=device, dtype="float32")
 
 # %%
 packed_atoms, log_data = random_packed_structure(
-    composition=comp,
-    cell=cell,
-    seed=global_seed,
-    fmax=fmax,
-    max_iter=max_iter,
+    composition=COMP,
+    cell=CELL,
+    seed=GLOBAL_SEED,
+    fmax=FMAX,
+    max_iter=MAX_ITER,
     verbose=True,
     auto_diameter=True,
     trajectory_file=None,
@@ -106,18 +106,18 @@ print(f"Soft sphere packed structure is ready {packed_atoms}")
 # %%
 amorphous_atoms, md_log = melt_quench_md(
     atoms=packed_atoms,
-    calculator=calculator,
-    equi_steps=md_equi_steps,
-    cool_steps=md_cool_steps,
-    final_steps=md_final_steps,
-    T_high=md_T_high,
-    T_low=md_T_low,
-    time_step=md_time_step,
-    friction=md_friction,
+    calculator=CALCULATOR,
+    equi_steps=MD_EQUILIBRIUM_STEPS,
+    cool_steps=MD_COOL_STEPS,
+    final_steps=MD_FINAL_STEPS,
+    T_high=MD_T_HIGH,
+    T_low=MD_T_LOW,
+    time_step=MD_TIME_STEP,
+    friction=MD_FRICTION,
     trajectory_file=None,
-    seed=global_seed,
+    seed=GLOBAL_SEED,
     verbose=True,
-    log_interval=md_log_interval,
+    log_interval=MD_LOG_INTERVAL,
 )
 print(f"Final amorphous structure is ready {amorphous_atoms}")
 
@@ -148,7 +148,7 @@ print("Relaxing candidate structures...")
 for atoms in tqdm(crystallizable_cells):
     # Relax the structure
     relaxed_atoms, logger = relax_unit_cell(
-        atoms=atoms, calculator=calculator, max_iter=max_iter, fmax=fmax, verbose=False
+        atoms=atoms, calculator=CALCULATOR, max_iter=MAX_ITER, fmax=FMAX, verbose=False
     )
 
     # Get final energy and pressure
