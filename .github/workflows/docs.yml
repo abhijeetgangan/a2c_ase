@@ -20,33 +20,37 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Install dependencies
         run: |
-          pip install -e ".[docs]"
-          pip install mace-torch
-          python -m ipykernel install --user --name python3
+          uv venv
+          uv pip install -e ".[docs]"
+          uv pip install mace-torch
+          uv run python -m ipykernel install --user --name python3
 
       - name: Convert and execute Si64.py
         run: |
-          jupytext --to notebook --execute example/Si64.py -o docs/examples/Si64.ipynb
+          uv run jupytext --to notebook --execute example/Si64.py -o docs/examples/Si64.ipynb
         env:
           CI: "true"
 
       - name: Convert and execute hull.py
         run: |
-          jupytext --to notebook --execute example/hull.py -o docs/examples/hull.ipynb
+          uv run jupytext --to notebook --execute example/hull.py -o docs/examples/hull.ipynb
         env:
           CI: "true"
 
       - name: Convert and execute cell_extraction.py
         run: |
-          jupytext --to notebook --execute example/cell_extraction.py -o docs/examples/cell_extraction.ipynb
+          uv run jupytext --to notebook --execute example/cell_extraction.py -o docs/examples/cell_extraction.ipynb
         env:
           CI: "true"
 
       - name: Build docs
-        run: mkdocs build --strict
+        run: uv run mkdocs build --strict
 
       - name: Deploy to GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: mkdocs gh-deploy --force
+        run: uv run mkdocs gh-deploy --force
