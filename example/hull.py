@@ -38,7 +38,7 @@ from pymatgen.analysis.phase_diagram import PDEntry, PDPlotter, PhaseDiagram
 from pymatgen.core.composition import Composition
 from tqdm import tqdm
 
-from a2c_ase.potentials.mlj import MultiLennardJones
+from a2c_ase.potentials.lj_ms import LennardJonesMultiSpecies
 from a2c_ase.runner import melt_quench_md, relax_unit_cell
 from a2c_ase.utils import extract_crystallizable_subcells, random_packed_structure
 
@@ -62,7 +62,7 @@ cell_size = 4.4
 cell = np.array([[cell_size, 0.0, 0.0], [0.0, cell_size, 0.0], [0.0, 0.0, cell_size]])
 
 # Kob-Andersen calculator (reduced/LJ units)
-calculator = MultiLennardJones(
+calculator = LennardJonesMultiSpecies(
     sigma={"Ni": 1.0, "P": 0.88},  # LJ sigma in natural units
     epsilon={"Ni": 1.0, "P": 0.5},  # LJ epsilon in natural units
     cross_interactions={("Ni", "P"): {"sigma": 0.8, "epsilon": 1.5}},

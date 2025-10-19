@@ -3,7 +3,7 @@
 import numpy as np
 from ase import Atoms
 
-from a2c_ase.potentials.mlj import MultiLennardJones
+from a2c_ase.potentials.lj_ms import LennardJonesMultiSpecies
 from a2c_ase.potentials.soft_sphere import SoftSphere
 
 
@@ -112,7 +112,7 @@ def test_lennard_jones_energy_values():
     # Test at minimum: r = 2^(1/6) * sigma
     r_min = 2.0 ** (1.0 / 6.0) * sigma
     atoms = Atoms("Ar2", positions=[[0, 0, 0], [r_min, 0, 0]])
-    calc = MultiLennardJones(sigma=sigma, epsilon=epsilon, rc=3.0, smooth=False)
+    calc = LennardJonesMultiSpecies(sigma=sigma, epsilon=epsilon, rc=3.0, smooth=False)
     atoms.calc = calc
     energy_min = atoms.get_potential_energy()
 
@@ -124,7 +124,7 @@ def test_lennard_jones_energy_values():
 
     # Test at sigma: should be close to zero (with shift)
     atoms2 = Atoms("Ar2", positions=[[0, 0, 0], [sigma, 0, 0]])
-    atoms2.calc = MultiLennardJones(sigma=sigma, epsilon=epsilon, rc=3.0, smooth=False)
+    atoms2.calc = LennardJonesMultiSpecies(sigma=sigma, epsilon=epsilon, rc=3.0, smooth=False)
     energy_at_sigma = atoms2.get_potential_energy()
     expected_at_sigma = -e0_at_rc  # Just the shift
     assert np.isclose(energy_at_sigma, expected_at_sigma, atol=1e-3)
@@ -136,7 +136,7 @@ def test_lennard_jones_forces_at_minimum():
     r_min = 2.0 ** (1.0 / 6.0) * sigma
 
     atoms = Atoms("Ar2", positions=[[0, 0, 0], [r_min, 0, 0]])
-    calc = MultiLennardJones(sigma=sigma, epsilon=1.0, smooth=False)
+    calc = LennardJonesMultiSpecies(sigma=sigma, epsilon=1.0, smooth=False)
     atoms.calc = calc
     forces = atoms.get_forces()
 
@@ -146,7 +146,7 @@ def test_lennard_jones_forces_at_minimum():
 def test_lennard_jones_forces_gradient():
     """Test that LJ forces match negative energy gradient."""
     atoms = Atoms("Ar2", positions=[[0, 0, 0], [1.2, 0, 0]])
-    calc = MultiLennardJones(sigma=1.0, epsilon=1.0, smooth=False)
+    calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, smooth=False)
     atoms.calc = calc
 
     analytical_forces = atoms.get_forces()
@@ -159,12 +159,12 @@ def test_lennard_jones_forces_gradient():
         for j in range(3):
             atoms_plus = atoms.copy()
             atoms_plus.positions[i, j] += delta
-            atoms_plus.calc = MultiLennardJones(sigma=1.0, epsilon=1.0, smooth=False)
+            atoms_plus.calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, smooth=False)
             e_plus = atoms_plus.get_potential_energy()
 
             atoms_minus = atoms.copy()
             atoms_minus.positions[i, j] -= delta
-            atoms_minus.calc = MultiLennardJones(sigma=1.0, epsilon=1.0, smooth=False)
+            atoms_minus.calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, smooth=False)
             e_minus = atoms_minus.get_potential_energy()
 
             numerical_forces[i, j] = -(e_plus - e_minus) / (2 * delta)
@@ -175,7 +175,7 @@ def test_lennard_jones_forces_gradient():
 def test_lennard_jones_smooth_cutoff():
     """Test smooth cutoff gives continuous forces."""
     atoms = Atoms("Ar2", positions=[[0, 0, 0], [1.5, 0, 0]])
-    calc = MultiLennardJones(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
+    calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
     atoms.calc = calc
 
     analytical_forces = atoms.get_forces()
@@ -188,12 +188,12 @@ def test_lennard_jones_smooth_cutoff():
         for j in range(3):
             atoms_plus = atoms.copy()
             atoms_plus.positions[i, j] += delta
-            atoms_plus.calc = MultiLennardJones(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
+            atoms_plus.calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
             e_plus = atoms_plus.get_potential_energy()
 
             atoms_minus = atoms.copy()
             atoms_minus.positions[i, j] -= delta
-            atoms_minus.calc = MultiLennardJones(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
+            atoms_minus.calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, rc=2.5, smooth=True)
             e_minus = atoms_minus.get_potential_energy()
 
             numerical_forces[i, j] = -(e_plus - e_minus) / (2 * delta)
@@ -205,7 +205,7 @@ def test_lennard_jones_cutoff_beyond_rc():
     """Test that LJ interactions are zero beyond cutoff."""
     rc = 2.0
     atoms = Atoms("Ar2", positions=[[0, 0, 0], [2.5, 0, 0]])
-    calc = MultiLennardJones(sigma=1.0, epsilon=1.0, rc=rc)
+    calc = LennardJonesMultiSpecies(sigma=1.0, epsilon=1.0, rc=rc)
     atoms.calc = calc
 
     energy = atoms.get_potential_energy()
@@ -222,7 +222,7 @@ def test_lennard_jones_mixing_rules():
     sigma = {"Ar": 1.0, "Ne": 0.8}
     epsilon = {"Ar": 1.0, "Ne": 0.64}
 
-    calc = MultiLennardJones(sigma=sigma, epsilon=epsilon, mixing_rule="lorentz_berthelot")
+    calc = LennardJonesMultiSpecies(sigma=sigma, epsilon=epsilon, mixing_rule="lorentz_berthelot")
     atoms.calc = calc
     calc._setup_species_parameters(atoms)
 
@@ -239,7 +239,7 @@ def test_newton_third_law():
     """Test that forces obey Newton's third law for both potentials."""
     test_cases = [
         (SoftSphere, {"sigma": 1.0, "epsilon": 1.0, "alpha": 2}),
-        (MultiLennardJones, {"sigma": 1.0, "epsilon": 1.0}),
+        (LennardJonesMultiSpecies, {"sigma": 1.0, "epsilon": 1.0}),
     ]
 
     for calc_class, params in test_cases:
@@ -259,7 +259,7 @@ def test_translational_invariance():
 
     test_cases = [
         (SoftSphere, {"sigma": 1.0, "epsilon": 1.0, "alpha": 2}),
-        (MultiLennardJones, {"sigma": 1.0, "epsilon": 1.0}),
+        (LennardJonesMultiSpecies, {"sigma": 1.0, "epsilon": 1.0}),
     ]
 
     for calc_class, params in test_cases:
@@ -284,7 +284,7 @@ def test_rotational_invariance():
 
     test_cases = [
         (SoftSphere, {"sigma": 1.0, "epsilon": 1.0, "alpha": 2}),
-        (MultiLennardJones, {"sigma": 1.0, "epsilon": 1.0}),
+        (LennardJonesMultiSpecies, {"sigma": 1.0, "epsilon": 1.0}),
     ]
 
     for calc_class, params in test_cases:
@@ -303,7 +303,7 @@ def test_per_atom_energy_sum():
     """Test that per-atom energies sum to total energy."""
     test_cases = [
         (SoftSphere, {"sigma": 1.0, "epsilon": 1.0, "alpha": 2}),
-        (MultiLennardJones, {"sigma": 1.0, "epsilon": 1.0}),
+        (LennardJonesMultiSpecies, {"sigma": 1.0, "epsilon": 1.0}),
     ]
 
     for calc_class, params in test_cases:
