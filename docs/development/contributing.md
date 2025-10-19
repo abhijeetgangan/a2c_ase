@@ -8,6 +8,7 @@ git clone https://github.com/YOUR_USERNAME/a2c_ase.git
 cd a2c_ase
 
 # Install with dev dependencies
+# with pip
 pip install -e ".[dev,test]"
 
 # Set up pre-commit hooks
@@ -24,10 +25,10 @@ git checkout -b feature/your-feature-name
 ### Code Quality
 
 ```bash
-ruff check        # Lint
-ruff format       # Format
-ty check          # Type check
-pytest            # Test
+ruff check         # lint
+ruff format        # format
+ty check           # type check
+pytest             # test
 ```
 
 ### Documentation
