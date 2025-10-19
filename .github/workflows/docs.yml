@@ -28,23 +28,26 @@ jobs:
           uv venv
           uv pip install -e ".[docs]"
           uv pip install mace-torch
-          uv run python -m ipykernel install --user --name python3
+
+      - name: Install Jupyter kernel
+        run: |
+          uv run python -m ipykernel install --user --name a2c_ase --display-name "Python (a2c_ase)"
 
       - name: Convert and execute Si64.py
         run: |
-          uv run jupytext --to notebook --execute example/Si64.py -o docs/examples/Si64.ipynb
+          uv run jupytext --to notebook --execute --set-kernel a2c_ase example/Si64.py -o docs/examples/Si64.ipynb
         env:
           CI: "true"
 
       - name: Convert and execute hull.py
         run: |
-          uv run jupytext --to notebook --execute example/hull.py -o docs/examples/hull.ipynb
+          uv run jupytext --to notebook --execute --set-kernel a2c_ase example/hull.py -o docs/examples/hull.ipynb
         env:
           CI: "true"
 
       - name: Convert and execute cell_extraction.py
         run: |
-          uv run jupytext --to notebook --execute example/cell_extraction.py -o docs/examples/cell_extraction.ipynb
+          uv run jupytext --to notebook --execute --set-kernel a2c_ase example/cell_extraction.py -o docs/examples/cell_extraction.ipynb
         env:
           CI: "true"
 
